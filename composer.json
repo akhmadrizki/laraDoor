@@ -1,0 +1,22 @@
+{
+    "name": "akhmadrizki/laradoor",
+    "description": "timedoor challenge",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Akhmad Rizki Prayoga",
+            "email": "akhmadrizki24@gmail.com"
+        }
+    ],
+    "require": {
+        "php" : "^8.0.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        },
+        "files": [
+            "helper.php"
+        ]
+    }
+}
