@@ -60,6 +60,7 @@ class QueryBuilder
       $this->query .= $joined;
     }
 
+    // prepare data
     $this->db->query($this->query);
 
     try {

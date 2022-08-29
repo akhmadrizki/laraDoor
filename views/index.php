@@ -58,7 +58,7 @@
                 <?= $post->getTitle(); ?>
               </strong>
               <p class="display-6">
-                <?= $post->getMessage(); ?>
+                <?= nl2br($post->getMessage()); ?>
               </p>
             </div>
             <div class="col-4 d-flex justify-content-end align-items-end">
