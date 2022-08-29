@@ -8,20 +8,24 @@ use PDOException;
 class MySqlConnection
 {
 
+  private $host;
+  private $dbName;
+  private $user;
+  private $pass;
   private $dbh;
   private $stmt;
 
   public function __construct()
   {
-    $db_host     = "localhost";
-    $db_name     = "bulletin_board";
-    $db_username = "root";
-    $db_password = "";
+    $this->host     = SERVER;
+    $this->dbName   = DB_NAME;
+    $this->user     = USER_DB;
+    $this->pass     = PASS_DB;
 
-    $conn = "mysql:host={$db_host};dbname={$db_name}";
+    $conn = "mysql:host={$this->host};dbname={$this->dbName}";
 
     try {
-      $this->dbh = new PDO($conn, $db_username, $db_password);
+      $this->dbh = new PDO($conn, $this->user, $this->pass);
       $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $err) {
       die($err->getMessage());

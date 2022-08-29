@@ -37,9 +37,9 @@
       <div class="mb-3">
         <label for="body" class="form-label">Body</label>
         <textarea class="form-control" id="body" name="message" rows="3"></textarea>
-        <?php if (isset($_SESSION['errorMessage'])) : ?>
+        <?php if (isset($_SESSION['errorText'])) : ?>
           <code>
-            <?= $_SESSION['errorMessage']; ?>
+            <?= $_SESSION['errorText']; ?>
           </code>
         <?php endif; ?>
       </div>
