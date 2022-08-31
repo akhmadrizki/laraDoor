@@ -17,30 +17,35 @@
 
 <body>
   <div class="container py-5">
-    <?php if (isset($_SESSION['error'])) : ?>
-      <p class="text-center text-danger">
-        <?= $_SESSION['error']; ?>
-      </p>
-    <?php endif; ?>
+
 
     <form action="" method="POST">
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
-        <input type="text" class="form-control" id="text" name="title">
-        <?php if (isset($_SESSION['errorTitle'])) : ?>
-          <code>
-            <?= $_SESSION['errorTitle']; ?>
-          </code>
+        <input type="text" class="form-control" id="text" name="title" value="<?= isset(session()->get('old')['title']) ? session()->get('old')['title'] : '' ?>">
+
+        <?php if (isset(session()->get('errors')['title'])) : ?>
+          <?php foreach (session()->get('errors')['title'] as $error) : ?>
+            <div>
+              <code>
+                <?= $error; ?>
+              </code>
+            </div>
+          <?php endforeach ?>
         <?php endif; ?>
       </div>
 
       <div class="mb-3">
         <label for="body" class="form-label">Body</label>
-        <textarea class="form-control" id="body" name="message" rows="3"></textarea>
-        <?php if (isset($_SESSION['errorText'])) : ?>
-          <code>
-            <?= $_SESSION['errorText']; ?>
-          </code>
+        <textarea class="form-control" id="body" name="message" rows="3"><?= isset(session()->get('old')['title']) ? session()->get('old')['title'] : '' ?></textarea>
+        <?php if (isset(session()->get('errors')['message'])) : ?>
+          <?php foreach (session()->get('errors')['message'] as $error) : ?>
+            <div>
+              <code>
+                <?= $error; ?>
+              </code>
+            </div>
+          <?php endforeach ?>
         <?php endif; ?>
       </div>
 
@@ -55,10 +60,10 @@
           <div class="row">
             <div class="col-8">
               <strong>
-                <?= $post->getTitle(); ?>
+                <?= htmlspecialchars($post->getTitle()); ?>
               </strong>
               <p class="display-6">
-                <?= nl2br($post->getMessage()); ?>
+                <?= nl2br(htmlspecialchars($post->getMessage())); ?>
               </p>
             </div>
             <div class="col-4 d-flex justify-content-end align-items-end">
@@ -67,6 +72,7 @@
           </div>
         </div>
       <?php endforeach; ?>
+
     <?php else : ?>
       <div class="d-flex flex-column align-items-center">
         <h3 class="text-secondary">Oppss Sorry, Data Is Empty</h3>
@@ -75,6 +81,9 @@
     <?php endif; ?>
 
   </div>
+
+  <?php session()->forget('old') ?>
+  <?php session()->forget('errors') ?>
 </body>
 
 </html>

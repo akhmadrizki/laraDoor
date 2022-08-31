@@ -1,10 +1,16 @@
 <?php
 
+session_start();
+
 use App\Controller\HomePageController;
+use App\Services\Request\Request;
 
 require '../vendor/autoload.php';
 
-if (isset($_POST['send'])) {
-  (new HomePageController)->store();
+$request = new Request();
+
+if ($request->isPost()) {
+  (new HomePageController)->store($request);
 }
+
 (new HomePageController)->index();

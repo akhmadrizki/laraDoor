@@ -14,24 +14,20 @@ class QueryBuilder
   protected ?array $orderBy;
   protected string $query;
 
+  protected array $orders = [];
+
   public function __construct()
   {
-    $this->db    = new MySqlConnection();
-    $this->table = "";
-    $this->select = null;
+    $this->db      = new MySqlConnection();
+    $this->table   = "";
+    $this->select  = null;
     $this->orderBy = null;
-    $this->query = "";
+    $this->query   = "";
   }
 
   public function table(string $table)
   {
     $this->table = $table;
-    return $this;
-  }
-
-  public function select(array $select)
-  {
-    $this->select = $select;
     return $this;
   }
 
@@ -41,27 +37,50 @@ class QueryBuilder
     return $this;
   }
 
-  public function get()
+  public function insert(array $data)
   {
-    if ($this->select != null) {
-      $this->query .= "SELECT ";
+    $insert  = "INSERT INTO {$this->table}(title, message) VALUES (:title, :message)";
+    $stm     = $this->db->query($insert);
+    $title   = strtolower($data['title']);
+    $message = strtolower($data['message']);
+    $stm->bindParam(':title', $title, PDO::PARAM_STR);
+    $stm->bindParam(':message', $message, PDO::PARAM_STR);
+    $stm->execute();
+  }
 
-      $joined = join(',', $this->select);
-      $this->query .= $joined;
-    }
+  public static function from(string $table): static
+  {
+    $builder = new static;
 
-    if ($this->table != null) {
-      $this->query .= " FROM {$this->table}";
-    }
+    $builder->setTable($table);
+    return $builder;
+  }
 
-    if ($this->orderBy != null) {
-      $this->query .= " ORDER BY ";
-      $joined = join(' ', $this->orderBy);
-      $this->query .= $joined;
-    }
+  public function setTable(string $table): static
+  {
+    $this->table = $table;
+    return $this;
+  }
 
-    // prepare data
-    $this->db->query($this->query);
+  public function select(array $columns)
+  {
+    $this->select = $columns;
+    return $this;
+  }
+
+  // public function orderBy(string $column, string $direction = 'ASC'): static
+  // {
+  //   $this->orders[] = [$column, $direction];
+  //   return $this;
+  // }
+
+
+  public function get(): array
+  {
+    $query = $this->buildQuery();
+
+    // Prepare data
+    $this->db->query($query);
 
     try {
       return $this->db->fetchAll();
@@ -71,14 +90,28 @@ class QueryBuilder
     }
   }
 
-  public function insert(array $data)
+  protected function buildQuery(): string
   {
-    $insert = "INSERT INTO {$this->table}(title, message) VALUES (:title, :message)";
-    $stm = $this->db->query($insert);
-    $secureMsg = htmlspecialchars(strtolower($data['message']));
-    $secureTitle = htmlspecialchars(strtolower($data['title']));
-    $stm->bindParam(':title', $secureTitle, PDO::PARAM_STR);
-    $stm->bindParam(':message', $secureMsg, PDO::PARAM_STR);
-    $stm->execute();
+
+    // This logic below for combine the query to execute database
+
+    if ($this->select != null) {
+      $this->query .= "SELECT ";
+
+      $joined = join(',', $this->select);
+      $this->query .= $joined;
+    }
+
+    if ($this->from($this->table) != null) {
+      $this->query .= " FROM {$this->table}";
+    }
+
+    if ($this->orderBy != null) {
+      $this->query .= " ORDER BY ";
+      $joined      = join(' ', $this->orderBy);
+      $this->query .= $joined;
+    }
+
+    return $this->query;
   }
 }

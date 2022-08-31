@@ -3,46 +3,44 @@
 namespace App\Controller;
 
 use App\Services\Message\MessageService;
+use App\Services\Request\Request;
+use App\Services\Validation\BetweenRule;
+use App\Services\Validation\RequiredRule;
 use App\Services\Validation\Validation;
 
 class HomePageController
 {
-  public function index(): void
+  public function index()
   {
     $messService = new MessageService;
-    $posts = $messService->get();
+    $posts       = $messService->get();
 
-    view('index', compact('posts'));
+    return view('index', compact('posts'));
   }
 
-  public function store(): void
+  public function store(Request $request)
   {
+    $data = $request->only(['title', 'message']);
 
-    $validasi = Validation::validate($_POST);
-    if ($validasi['status'] == true) {
-      $insert = new MessageService;
-      $insert->store(['message' => $_POST['message'], 'title' => $_POST['title']]);
-    } else {
-      $_SESSION['error'] = $validasi['mainMessage'];
-      $_SESSION['errorText'] = $validasi['bodyMessage'];
-      $_SESSION['errorTitle'] = $validasi['titleMessage'];
+    $validation = Validation::make($data, [
+      'title' => [
+        new RequiredRule("Title can't be null"),
+        new BetweenRule(10, 32, 'Title must be 10 to 32 characters long')
+      ],
+      'message' => [
+        new RequiredRule("Message can't be null"),
+        new BetweenRule(10, 200, 'Message must be 10 to 200 characters long')
+      ],
+    ]);
+
+    if ($validation->fails()) {
+      session()->put('errors', $validation->getErrors());
+      session()->put('old', $data);
+
+      return redirect('/');
     }
 
-    // if (isset($_POST['send'])) {
-
-
-
-
-
-    // if (empty($_POST['message']) || empty($_POST['title'])) {
-    //   $_SESSION['error'] = "Field can't be null";
-    // } elseif ((strlen($_POST['title']) < 10 || strlen($_POST['title']) > 32) && (strlen($_POST['message']) < 10 || strlen($_POST['message']) > 200)) {
-    //   $_SESSION['errorTitle'] = "Title must be 10 to 32 characters long";
-    //   $_SESSION['errorMessage'] = "Message must be 10 to 200 characters long";
-    // } else {
-    //   $insert = new MessageService;
-    //   $insert->store(['message' => $_POST['message'], 'title' => $_POST['title']]);
-    // }
-    // }
+    $insert = new MessageService;
+    $insert->store(['message' => $data['message'], 'title' => $data['title']]);
   }
 }

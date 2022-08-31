@@ -8,13 +8,20 @@ use DateTime;
 class MessageService
 {
 
-  public function get(): array
+  public function get()
   {
-    $query = new QueryBuilder;
-    $get = $query->select(['*'])->table('posts')->orderBy(['created_at', 'DESC'])->get();
+    /**
+     * This variable get return thic code
+     * SELECT * FROM posts ORDER BY created_at DESC
+     */
+    $get = QueryBuilder::from(Message::getTable())->select(['*'])->orderBy(['created_at', 'DESC'])->get();
 
     $msg = [];
 
+    /**
+     * The code loop data from Message.php
+     * then put on the array msg
+     */
     foreach ($get as $value) {
       $msg[] = new Message(
         id: $value['id'],

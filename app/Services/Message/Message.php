@@ -34,4 +34,9 @@ class Message
   {
     return $this->created_at;
   }
+
+  public static function getTable(): string
+  {
+    return 'posts';
+  }
 }

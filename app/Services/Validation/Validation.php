@@ -5,43 +5,45 @@ namespace App\Services\Validation;
 class Validation
 {
 
-  public static function validate(array $data)
+  protected array $error = [];
+
+  public static function make(array $attributes, array $rules): static
   {
-    if (empty($data['message']) && empty($data['title'])) {
-      $respons = [
-        'status' => false,
-        'mainMessage'  => "Field can't be null",
-        'titleMessage' => "",
-        'bodyMessage'  => "",
-      ];
-    } elseif ((strlen($_POST['title']) < 10 || strlen($_POST['title']) > 32) && empty($data['message'])) {
-      $respons = [
-        'status' => false,
-        'mainMessage'  => "",
-        'titleMessage' => "Title must be 10 to 32 characters long",
-        'bodyMessage'  => "Field can't be null",
-      ];
-    } elseif ((strlen($_POST['message']) < 10 || strlen($_POST['message']) > 32) && empty($data['title'])) {
-      $respons = [
-        'status' => false,
-        'mainMessage'  => "",
-        'titleMessage' => "Field can't be null",
-        'bodyMessage'  => "Message must be 10 to 200 characters long",
-      ];
-    } elseif ((strlen($_POST['title']) < 10 || strlen($_POST['title']) > 32) && (strlen($_POST['message']) < 10 || strlen($_POST['message']) > 200)) {
-      $respons = [
-        'status' => false,
-        'mainMessage'  => "",
-        'titleMessage' => "Title must be 10 to 32 characters long",
-        'bodyMessage'  => "Message must be 10 to 200 characters long",
-      ];
-    } else {
-      $respons = [
-        'status' => true,
-        'message' => "Success",
-      ];
+    $validation = new static;
+
+    foreach ($rules as $attribute => $attrRule) {
+      foreach ($attrRule as $rule) {
+        if (!$rule->isValid($attributes[$attribute] ?? null)) {
+          if (!array_key_exists($attribute, $validation->error)) {
+            $validation->error[$attribute] = [$rule->getMessage()];
+          } else {
+            array_push($validation->error[$attribute], $rule->getMessage());
+          }
+        }
+      }
     }
 
-    return $respons;
+    // dd($validation);
+
+    return $validation;
+  }
+
+  /**
+   * This function to know the validation is fail or not
+   *
+   * @return boolean
+   */
+  public function fails(): bool
+  {
+    if (count($this->error) > 0) {
+      return true;
+    }
+
+    return false;
+  }
+
+  public function getErrors(): array
+  {
+    return $this->error;
   }
 }
