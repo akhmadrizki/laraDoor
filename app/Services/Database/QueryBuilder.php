@@ -11,17 +11,14 @@ class QueryBuilder
   protected MySqlConnection $db;
   protected string $table;
   protected ?array $select;
-  protected ?array $orderBy;
   protected string $query;
-
-  protected array $orders = [];
+  protected array $orderBy = [];
 
   public function __construct()
   {
     $this->db      = new MySqlConnection();
     $this->table   = "";
     $this->select  = null;
-    $this->orderBy = null;
     $this->query   = "";
   }
 
@@ -31,11 +28,11 @@ class QueryBuilder
     return $this;
   }
 
-  public function orderBy(array $order)
-  {
-    $this->orderBy = $order;
-    return $this;
-  }
+  // public function orderBy(array $order)
+  // {
+  //   $this->orderBy = $order;
+  //   return $this;
+  // }
 
   public function insert(array $data)
   {
@@ -68,16 +65,18 @@ class QueryBuilder
     return $this;
   }
 
-  // public function orderBy(string $column, string $direction = 'ASC'): static
-  // {
-  //   $this->orders[] = [$column, $direction];
-  //   return $this;
-  // }
+  public function orderBy(string $column, string $direction = 'ASC'): static
+  {
+    $this->orderBy[] = $column . ' ' . $direction;
+    return $this;
+  }
 
 
   public function get(): array
   {
     $query = $this->buildQuery();
+
+    // dd($query);
 
     // Prepare data
     $this->db->query($query);
@@ -108,9 +107,11 @@ class QueryBuilder
 
     if ($this->orderBy != null) {
       $this->query .= " ORDER BY ";
-      $joined      = join(' ', $this->orderBy);
+      $joined      = join(', ', $this->orderBy);
       $this->query .= $joined;
     }
+
+    // dd($this->orderBy);
 
     return $this->query;
   }

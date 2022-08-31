@@ -13,13 +13,16 @@ class MessageService
     /**
      * This variable get return thic code
      * SELECT * FROM posts ORDER BY created_at DESC
+     * function orderBy can be added twice
      */
-    $get = QueryBuilder::from(Message::getTable())->select(['*'])->orderBy(['created_at', 'DESC'])->get();
+    $get = QueryBuilder::from(Message::getTable())->select(['*'])
+      ->orderBy('created_at', 'DESC')
+      ->get();
 
     $msg = [];
 
     /**
-     * The code loop data from Message.php
+     * The code loop data from Message.php (DTO Process)
      * then put on the array msg
      */
     foreach ($get as $value) {
