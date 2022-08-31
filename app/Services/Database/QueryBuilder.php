@@ -13,6 +13,7 @@ class QueryBuilder
   protected ?array $select;
   protected string $query;
   protected array $orderBy = [];
+  protected string $limit;
 
   public function __construct()
   {
@@ -20,6 +21,7 @@ class QueryBuilder
     $this->table   = "";
     $this->select  = null;
     $this->query   = "";
+    $this->limit   = "";
   }
 
   public function table(string $table)
@@ -89,6 +91,12 @@ class QueryBuilder
     }
   }
 
+  public function limit(int $limit)
+  {
+    $this->limit = $limit;
+    return $this;
+  }
+
   protected function buildQuery(): string
   {
 
@@ -109,6 +117,11 @@ class QueryBuilder
       $this->query .= " ORDER BY ";
       $joined      = join(', ', $this->orderBy);
       $this->query .= $joined;
+    }
+
+    if ($this->limit != null) {
+      $this->query .= " LIMIT ";
+      $this->query .= $this->limit;
     }
 
     // dd($this->orderBy);
