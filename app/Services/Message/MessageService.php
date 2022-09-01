@@ -11,7 +11,7 @@ class MessageService
   public function get()
   {
     /**
-     * This variable get return thic code
+     * This variable get return this code
      * SELECT * FROM posts ORDER BY created_at DESC
      * function orderBy can be added twice
      */
