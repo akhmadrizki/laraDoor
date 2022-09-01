@@ -80,6 +80,16 @@
       </div>
     <?php endif; ?>
 
+    <hr>
+
+    <?php for ($i = 1; $i <= $pages; $i++) : ?>
+      <?php if ($i == $current) : ?>
+        <a><?= $i; ?></a>
+      <?php else : ?>
+        <a href="?page=<?= $i; ?>"><?= $i; ?></a>
+      <?php endif; ?>
+    <?php endfor; ?>
+
   </div>
 
   <?php session()->forget('old') ?>

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Services\Database\QueryBuilder;
 use App\Services\Message\MessageService;
 use App\Services\Request\Request;
 use App\Services\Validation\BetweenRule;
@@ -15,7 +16,11 @@ class HomePageController
     $messService = new MessageService;
     $posts       = $messService->get();
 
-    return view('index', compact('posts'));
+    $paginate = new QueryBuilder;
+    $pages  = $paginate->get_pagination_number();
+    $current = $paginate->current_page();
+
+    return view('index', compact('posts', 'pages', 'current'));
   }
 
   public function store(Request $request)

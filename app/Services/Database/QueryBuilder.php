@@ -14,6 +14,8 @@ class QueryBuilder
   protected string $query;
   protected array $orderBy = [];
   protected string $limit;
+  protected $total_record;
+  protected $lim;
 
   public function __construct()
   {
@@ -95,6 +97,59 @@ class QueryBuilder
   {
     $this->limit = $limit;
     return $this;
+  }
+
+  public function lim($lim)
+  {
+    $this->lim = $lim;
+    return $this;
+  }
+
+  public function paginate(int $lim)
+  {
+    $start = 0;
+    if ($this->current_page() > 1) {
+      $start = ($this->current_page() * $lim) - $lim;
+    }
+
+    $stmt = "SELECT * FROM posts LIMIT $start, {$lim}";
+
+    // Prepare data
+    $this->db->query($stmt);
+
+    try {
+      return $this->db->fetchAll();
+    } catch (Exception $e) {
+      echo $e->getMessage();
+      die;
+    }
+  }
+
+  public function setTotalRecord()
+  {
+    $stmt = "SELECT * FROM posts";
+    // Prepare data
+    $this->db->query($stmt);
+
+    try {
+      $this->db->fetchAll();
+    } catch (Exception $e) {
+      echo $e->getMessage();
+      die;
+    }
+
+    $this->total_record = count($this->db->fetchAll());
+  }
+
+  public function get_pagination_number()
+  {
+    $this->setTotalRecord();
+    return ceil($this->total_record / 5);
+  }
+
+  public function current_page()
+  {
+    return isset($_GET['page']) ? (int)$_GET['page'] : 1;
   }
 
   protected function buildQuery(): string
