@@ -10,16 +10,16 @@ class QueryBuilder
 {
   protected MySqlConnection $db;
   protected string $table;
-  protected ?array $select;
+  protected ?array $select = ["*"];
   protected string $query;
   protected array $orderBy = [];
   protected string $limit;
+  // isi default value disini yaa jgn di dlm construct!!!
 
   public function __construct()
   {
     $this->db      = new MySqlConnection();
     $this->table   = "";
-    $this->select  = null;
     $this->query   = "";
     $this->limit   = "";
   }
@@ -27,6 +27,7 @@ class QueryBuilder
   public function table(string $table)
   {
     $this->table = $table;
+
     return $this;
   }
 
@@ -42,6 +43,7 @@ class QueryBuilder
     $stm     = $this->db->query($insert);
     $title   = strtolower($data['title']);
     $message = strtolower($data['message']);
+
     $stm->bindParam(':title', $title, PDO::PARAM_STR);
     $stm->bindParam(':message', $message, PDO::PARAM_STR);
     $stm->execute();
@@ -52,24 +54,28 @@ class QueryBuilder
     $builder = new static;
 
     $builder->setTable($table);
+
     return $builder;
   }
 
   public function setTable(string $table): static
   {
     $this->table = $table;
+
     return $this;
   }
 
-  public function select(array $columns)
+  public function select(array $columns): static
   {
     $this->select = $columns;
+
     return $this;
   }
 
   public function orderBy(string $column, string $direction = 'ASC'): static
   {
     $this->orderBy[] = $column . ' ' . $direction;
+
     return $this;
   }
 
@@ -87,6 +93,7 @@ class QueryBuilder
       return $this->db->fetchAll();
     } catch (Exception $e) {
       echo $e->getMessage();
+
       die;
     }
   }
@@ -94,6 +101,7 @@ class QueryBuilder
   public function limit(int $limit)
   {
     $this->limit = $limit;
+
     return $this;
   }
 
@@ -125,7 +133,6 @@ class QueryBuilder
     }
 
     // dd($this->orderBy);
-
     return $this->query;
   }
 }

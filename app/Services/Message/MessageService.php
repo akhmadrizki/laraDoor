@@ -10,6 +10,7 @@ class MessageService
 
   public function get()
   {
+    $msg = [];
     /**
      * This variable get return this code
      * SELECT * FROM posts ORDER BY created_at DESC
@@ -18,8 +19,6 @@ class MessageService
     $get = QueryBuilder::from(Message::getTable())->select(['*'])
       ->orderBy('created_at', 'DESC')
       ->get();
-
-    $msg = [];
 
     /**
      * The code loop data from Message.php (DTO Process)
@@ -40,6 +39,7 @@ class MessageService
   public function store(array $data)
   {
     $query = new QueryBuilder;
+
     $query->table('posts')->insert($data);
   }
 }
