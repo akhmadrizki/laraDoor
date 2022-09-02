@@ -35,6 +35,7 @@ class MySqlConnection
   public function query($query)
   {
     $this->stmt = $this->dbh->prepare($query);
+
     return $this->stmt;
   }
 
@@ -46,6 +47,7 @@ class MySqlConnection
   public function fetchAll()
   {
     $this->execute();
+
     return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 }

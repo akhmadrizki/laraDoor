@@ -2,7 +2,7 @@
 
 namespace App\Services\Validation;
 
-class RequiredRule
+class RequiredRule implements Rules
 {
   public function __construct(string $customMessage = '')
   {
@@ -11,18 +11,23 @@ class RequiredRule
 
   public function isValid(mixed $value): bool
   {
-    if ($value == null || $value == '') {
+    if (is_null($value)) {
       return false;
     }
+
+    if (is_array($value)) {
+      return count($value) > 0;
+    }
+
+    if (is_string($value)) {
+      return $value != '';
+    }
+
     return true;
   }
 
-  public function getMessage()
+  public function getMessage($attribute)
   {
-    if ($this->customMessage == '') {
-      return "Harus isi";
-    } else {
-      return $this->customMessage;
-    }
+    return $this->customMessage ?: "{$attribute} is reqquired";
   }
 }

@@ -46,6 +46,7 @@ class HomePageController
     }
 
     $insert = new MessageService;
+
     $insert->store(['message' => $data['message'], 'title' => $data['title']]);
   }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Services\Validation;
 
-class BetweenRule
+class BetweenRule implements Rules
 {
   protected int $min;
   protected int $max;
@@ -17,19 +17,19 @@ class BetweenRule
 
   public function isValid(mixed $value): bool
   {
-    if (strlen($value) < $this->min || strlen($value) > $this->max) {
+    if (is_string($value)) {
+      $value = strlen($value);
+    }
+
+    if (!is_int($value)) {
       return false;
     }
 
-    return true;
+    return $this->min <= $value && $this->max >= $value;
   }
 
-  public function getMessage()
+  public function getMessage($attribute)
   {
-    if ($this->customMessage == '') {
-      return "{$this->min} {$this->max}";
-    } else {
-      return $this->customMessage;
-    }
+    return $this->customMessage ?: "{$attribute} is reqquired";
   }
 }

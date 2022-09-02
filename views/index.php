@@ -91,9 +91,6 @@
     <?php endfor; ?>
 
   </div>
-
-  <?php session()->forget('old') ?>
-  <?php session()->forget('errors') ?>
 </body>
 
 </html>

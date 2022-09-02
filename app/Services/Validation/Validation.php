@@ -4,27 +4,21 @@ namespace App\Services\Validation;
 
 class Validation
 {
-
   protected array $error = [];
 
   public static function make(array $attributes, array $rules): static
   {
     $validation = new static;
 
-    foreach ($rules as $attribute => $attrRule) {
-      foreach ($attrRule as $rule) {
+    foreach ($rules as $attribute => $attrRules) {
+      foreach ($attrRules as $rule) {
         if (!$rule->isValid($attributes[$attribute] ?? null)) {
-          if (!array_key_exists($attribute, $validation->error)) {
-            $validation->error[$attribute] = [$rule->getMessage()];
-          } else {
-            array_push($validation->error[$attribute], $rule->getMessage());
-          }
+          $validation->error[$attribute][] = $rule->getMessage($attribute);
         }
       }
     }
 
     // dd($validation);
-
     return $validation;
   }
 
