@@ -67,7 +67,7 @@
               </p>
             </div>
             <div class="col-4 d-flex justify-content-end align-items-end">
-              <?= date_format($post->getCreatedAt(), "Y-m-d H:i:s"); ?>
+              <?= $post->getCreatedAt()->format("Y-m-d H:i:s"); ?>
             </div>
           </div>
         </div>

@@ -36,6 +36,7 @@ class QueryBuilder
 	public function insert(array $data)
 	{
 		// dd(array_keys($data));
+		// array_fill
 
 		$keys 		 = join(', ', array_keys($data));
 		$valueNumber = count(array_keys($data));
