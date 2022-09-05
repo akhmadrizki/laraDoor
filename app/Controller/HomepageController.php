@@ -10,38 +10,44 @@ use App\Services\Validation\Validation;
 
 class HomePageController
 {
-  public function index()
-  {
-    $messService = new MessageService;
-    $posts       = $messService->get();
+	public function index()
+	{
+		$messService = new MessageService;
+		// $posts       = $messService->get();
+		// Array destructuring.
+		[$posts, $pages, $current] = $messService->get();
 
-    return view('index', compact('posts'));
-  }
+		// $paginate = new QueryBuilder;
+		// $pages  = $paginate->get_pagination_number();
+		// $current = $paginate->current_page();
 
-  public function store(Request $request)
-  {
-    $data = $request->only(['title', 'message']);
+		return view('index', compact('posts', 'pages', 'current'));
+	}
 
-    $validation = Validation::make($data, [
-      'title' => [
-        new RequiredRule("Title can't be null"),
-        new BetweenRule(10, 32, 'Title must be 10 to 32 characters long')
-      ],
-      'message' => [
-        new RequiredRule("Message can't be null"),
-        new BetweenRule(10, 200, 'Message must be 10 to 200 characters long')
-      ],
-    ]);
+	public function store(Request $request)
+	{
+		$data = $request->only(['title', 'message']);
 
-    if ($validation->fails()) {
-      session()->put('errors', $validation->getErrors());
-      session()->put('old', $data);
+		$validation = Validation::make($data, [
+			'title' => [
+				new RequiredRule("Title can't be null"),
+				new BetweenRule(10, 32, 'Title must be 10 to 32 characters long')
+			],
+			'message' => [
+				new RequiredRule("Message can't be null"),
+				new BetweenRule(10, 200, 'Message must be 10 to 200 characters long')
+			],
+		]);
 
-      return redirect('/');
-    }
+		if ($validation->fails()) {
+			session()->put('errors', $validation->getErrors());
+			session()->put('old', $data);
 
-    $insert = new MessageService;
+			return redirect('/');
+		}
 
-    $insert->store(['message' => $data['message'], 'title' => $data['title']]);
-  }
+		$insert = new MessageService;
+
+		$insert->store($data);
+	}
 }
