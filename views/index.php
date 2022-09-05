@@ -37,7 +37,7 @@
 
       <div class="mb-3">
         <label for="body" class="form-label">Body</label>
-        <textarea class="form-control" id="body" name="message" rows="3"><?= isset(session()->get('old')['title']) ? session()->get('old')['title'] : '' ?></textarea>
+        <textarea class="form-control" id="body" name="message" rows="3"><?= isset(session()->get('old')['message']) ? session()->get('old')['message'] : '' ?></textarea>
         <?php if (isset(session()->get('errors')['message'])) : ?>
           <?php foreach (session()->get('errors')['message'] as $error) : ?>
             <div>
@@ -82,6 +82,10 @@
 
     <hr>
 
+    <?php if ($current != 1) : ?>
+      <a href="?page=<?= $current - 1; ?>">&laquo;</a>
+    <?php endif; ?>
+
     <?php for ($i = 1; $i <= $pages; $i++) : ?>
       <?php if ($i == $current) : ?>
         <a><?= $i; ?></a>
@@ -89,6 +93,10 @@
         <a href="?page=<?= $i; ?>"><?= $i; ?></a>
       <?php endif; ?>
     <?php endfor; ?>
+
+    <?php if ($current != $pages) : ?>
+      <a href="?page=<?= $current + 1; ?>">&raquo;</a>
+    <?php endif; ?>
 
   </div>
 </body>

@@ -8,186 +8,251 @@ use PDO;
 
 class QueryBuilder
 {
-  protected MySqlConnection $db;
-  protected string $table;
-  protected ?array $select = ["*"];
-  protected string $query;
-  protected array $orderBy = [];
-  protected string $limit;
-  protected $total_record;
-  protected $lim;
-  // isi default value disini yaa jgn di dlm construct!!!
+	protected MySqlConnection $db;
+	protected string $table;
+	protected ?array $select = ["*"];
+	protected string $query;
+	protected array $orderBy = [];
+	protected int $limit;
+	protected int $offset;
+	protected $total_record;
+	protected $limValue;
+	// isi default value disini yaa jgn di dlm construct!!!
 
-  public function __construct()
-  {
-    $this->db      = new MySqlConnection();
-    $this->table   = "";
-    $this->query   = "";
-    $this->limit   = "";
-  }
+	public function __construct()
+	{
+		$this->db      = new MySqlConnection();
+		$this->table   = "";
+		$this->query   = "";
+	}
 
-  public function table(string $table)
-  {
-    $this->table = $table;
+	public function table(string $table)
+	{
+		$this->table = $table;
 
-    return $this;
-  }
+		return $this;
+	}
 
-  // public function orderBy(array $order)
-  // {
-  //   $this->orderBy = $order;
-  //   return $this;
-  // }
+	public function insert(array $data)
+	{
+		// dd(array_keys($data));
 
-  public function insert(array $data)
-  {
-    $insert  = "INSERT INTO {$this->table}(title, message) VALUES (:title, :message)";
-    $stm     = $this->db->query($insert);
-    $title   = strtolower($data['title']);
-    $message = strtolower($data['message']);
+		$keys 		 = join(', ', array_keys($data));
+		$valueNumber = count(array_keys($data));
+		$repeat 	 = str_repeat("?,", $valueNumber);
+		$removeChar  = rtrim($repeat, ",");
+		// dd($removeChar);
 
-    $stm->bindParam(':title', $title, PDO::PARAM_STR);
-    $stm->bindParam(':message', $message, PDO::PARAM_STR);
-    $stm->execute();
-  }
+		$insert  = "INSERT INTO {$this->table}($keys) VALUES ($removeChar)";
+		$stm     = $this->db->query($insert);
 
-  public static function from(string $table): static
-  {
-    $builder = new static;
+		$index   = 1;
+		foreach ($data as $value) {
+			$toLower = strtolower($value);
+			$stm->bindParam($index, $toLower, PDO::PARAM_STR);
+			$index++;
+		}
 
-    $builder->setTable($table);
+		$stm->execute();
 
-    return $builder;
-  }
+		// $insert  = "INSERT INTO {$this->table}(title, message) VALUES (?, ?)";
+		// dd($insert);
 
-  public function setTable(string $table): static
-  {
-    $this->table = $table;
-
-    return $this;
-  }
-
-  public function select(array $columns): static
-  {
-    $this->select = $columns;
-
-    return $this;
-  }
-
-  public function orderBy(string $column, string $direction = 'ASC'): static
-  {
-    $this->orderBy[] = $column . ' ' . $direction;
-
-    return $this;
-  }
+		// foreach ($data as $key => $value) {
+		// 	$insert  = "INSERT INTO {$this->table}($key) VALUES (:title, :message)";
+		// 	echo $
+		// }
 
 
-  public function get(): array
-  {
-    $query = $this->buildQuery();
+		// foreach ($data as $key) {
+		// 	return $key;
+		// }
 
-    // dd($query);
 
-    // Prepare data
-    $this->db->query($query);
 
-    try {
-      return $this->db->fetchAll();
-    } catch (Exception $e) {
-      echo $e->getMessage();
+		// $stm     = $this->db->query($insert);
+		// $title   = strtolower($data['title']);
+		// $message = strtolower($data['message']);
 
-      die;
-    }
-  }
+		// $stm->bindParam(':title', $title, PDO::PARAM_STR);
+		// $stm->bindParam(':message', $message, PDO::PARAM_STR);
+		// $stm->execute();
+	}
 
-  public function limit(int $limit)
-  {
-    $this->limit = $limit;
+	public function from(string $table): static
+	{
+		$builder = new static;
 
-    return $this;
-  }
+		$builder->setTable($table);
 
-  public function lim($lim)
-  {
-    $this->lim = $lim;
-    return $this;
-  }
+		return $builder;
+	}
 
-  public function paginate(int $lim)
-  {
-    $start = 0;
-    if ($this->current_page() > 1) {
-      $start = ($this->current_page() * $lim) - $lim;
-    }
+	public function setTable(string $table): static
+	{
+		$this->table = $table;
 
-    $stmt = "SELECT * FROM posts LIMIT $start, {$lim}";
+		return $this;
+	}
 
-    // Prepare data
-    $this->db->query($stmt);
+	public function select(array $columns): static
+	{
+		$this->select = $columns;
 
-    try {
-      return $this->db->fetchAll();
-    } catch (Exception $e) {
-      echo $e->getMessage();
-      die;
-    }
-  }
+		return $this;
+	}
 
-  public function setTotalRecord()
-  {
-    $stmt = "SELECT * FROM posts";
-    // Prepare data
-    $this->db->query($stmt);
+	public function orderBy(string $column, string $direction = 'ASC'): static
+	{
+		$this->orderBy[] = $column . ' ' . $direction;
 
-    try {
-      $this->db->fetchAll();
-    } catch (Exception $e) {
-      echo $e->getMessage();
-      die;
-    }
+		return $this;
+	}
 
-    $this->total_record = count($this->db->fetchAll());
-  }
 
-  public function get_pagination_number()
-  {
-    $this->setTotalRecord();
-    return ceil($this->total_record / 5);
-  }
+	public function get(): array
+	{
+		$query = $this->buildQuery();
 
-  public function current_page()
-  {
-    return isset($_GET['page']) ? (int)$_GET['page'] : 1;
-  }
+		// dd($query);
 
-  protected function buildQuery(): string
-  {
+		// Prepare data
+		$this->db->query($query);
 
-    // This logic below for combine the query to execute database
+		try {
+			return $this->db->fetchAll();
+		} catch (Exception $e) {
+			echo $e->getMessage();
 
-    if ($this->select != null) {
-      $this->query .= "SELECT ";
+			die;
+		}
+	}
 
-      $joined = join(',', $this->select);
-      $this->query .= $joined;
-    }
+	public function limit(int $offset, int $limit): static
+	{
+		$this->offset = $offset;
+		$this->limit = $limit;
 
-    if ($this->from($this->table) != null) {
-      $this->query .= " FROM {$this->table}";
-    }
+		return $this;
+	}
 
-    if ($this->orderBy != null) {
-      $this->query .= " ORDER BY ";
-      $joined      = join(', ', $this->orderBy);
-      $this->query .= $joined;
-    }
+	public function paginate(int $lim)
+	{
+		// $start = 0;
+		// if ($this->current_page() > 1) {
+		// 	$start = ($this->current_page() * $lim) - $lim;
+		// }
 
-    if ($this->limit != null) {
-      $this->query .= " LIMIT ";
-      $this->query .= $this->limit;
-    }
+		// $stmt = "SELECT * FROM posts LIMIT $start, {$lim}";
 
-    // dd($this->orderBy);
-    return $this->query;
-  }
+		// $this->limValue = $lim;
+		// dd($this->limValue);
+
+
+		$query = $this->buildQueryPagination($lim);
+		// dd($query);
+		$this->limValue = $lim;
+
+		// Prepare data
+		$this->db->query($query);
+
+		try {
+			return $this->db->fetchAll();
+		} catch (Exception $e) {
+			echo $e->getMessage();
+			die;
+		}
+	}
+
+	public function setTotalRecord()
+	{
+		$stmt = "SELECT * FROM posts";
+		// Prepare data
+		$this->db->query($stmt);
+
+		try {
+			$this->db->fetchAll();
+		} catch (Exception $e) {
+			echo $e->getMessage();
+			die;
+		}
+
+		$this->total_record = count($this->db->fetchAll());
+	}
+
+	public function current_page()
+	{
+		return isset($_GET['page']) ? (int)$_GET['page'] : 1;
+	}
+
+	public function get_pagination_number($paginate)
+	{
+		$this->setTotalRecord();
+
+		return ceil($this->total_record / $paginate);
+	}
+
+	protected function buildQuery(): string
+	{
+		// This logic below for combine the query to execute database
+
+		if ($this->select != null) {
+			$this->query .= "SELECT ";
+
+			$joined = join(',', $this->select);
+			$this->query .= $joined;
+		}
+
+		if ($this->from($this->table) != null) {
+			$this->query .= " FROM {$this->table}";
+		}
+
+		if ($this->orderBy != null) {
+			$this->query .= " ORDER BY ";
+			$joined      = join(', ', $this->orderBy);
+			$this->query .= $joined;
+		}
+
+		if ($this->limit != null) {
+			$offset = strval($this->offset);
+			$limit = strval($this->limit);
+			$this->query .= " LIMIT ";
+			$this->query .= $offset . ',' . $limit;
+		}
+
+		// dd($this->orderBy);
+		return $this->query;
+	}
+
+	public function buildQueryPagination($limit): string
+	{
+		// This logic below for combine the query to execute database
+
+		if ($this->select != null) {
+			$this->query .= "SELECT ";
+
+			$joined = join(',', $this->select);
+			$this->query .= $joined;
+		}
+
+		if ($this->from($this->table) != null) {
+			$this->query .= " FROM {$this->table}";
+		}
+
+		if ($this->orderBy != null) {
+			$this->query .= " ORDER BY ";
+			$joined      = join(', ', $this->orderBy);
+			$this->query .= $joined;
+		}
+
+		$start = 0;
+		if ($this->current_page() > 1) {
+			$start = ($this->current_page() * $limit) - $limit;
+		}
+
+		$this->query .= " LIMIT ";
+		$this->query .= $start . ',' . $limit;
+
+		return $this->query;
+	}
 }

@@ -11,7 +11,7 @@ session_start();
 $request = new Request();
 
 if ($request->isPost()) {
-  (new HomePageController)->store($request);
+	(new HomePageController)->store($request);
 }
 
 (new HomePageController)->index();
