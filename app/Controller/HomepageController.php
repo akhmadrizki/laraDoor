@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Services\Message\MessageService;
+use App\Services\Pagination\Pagination;
 use App\Services\Request\Request;
 use App\Services\Validation\BetweenRule;
 use App\Services\Validation\RequiredRule;
@@ -10,18 +11,19 @@ use App\Services\Validation\Validation;
 
 class HomePageController
 {
-	public function index()
+	public function index(Request $request)
 	{
 		$messService = new MessageService;
-		// $posts       = $messService->get();
-		// Array destructuring.
-		[$posts, $pages, $current] = $messService->get();
 
-		// $paginate = new QueryBuilder;
-		// $pages  = $paginate->get_pagination_number();
-		// $current = $paginate->current_page();
+		$getRequest  = $request->query(Pagination::getUrlParam(), 1);
 
-		return view('index', compact('posts', 'pages', 'current'));
+		if (!is_numeric($getRequest)) {
+			$getRequest = 1;
+		}
+
+		$posts    = $messService->paginate(3, $getRequest);
+
+		return view('index', compact('posts'));
 	}
 
 	public function store(Request $request)

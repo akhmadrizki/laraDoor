@@ -14,7 +14,7 @@ if ($request->isPost()) {
 	(new HomePageController)->store($request);
 }
 
-(new HomePageController)->index();
+(new HomePageController)->index($request);
 
 // Session unset/destroy
 session()->forget('old');
