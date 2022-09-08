@@ -51,7 +51,7 @@ class QueryBuilder
 		$stm     = $this->db->query($insert);
 
 		foreach (array_values($data) as $index => $value) {
-			$stm->bindParam($index + 1, $value, PDO::PARAM_STR);
+			$stm->bindValue($index + 1, $value, PDO::PARAM_STR);
 		}
 
 		$stm->execute();
