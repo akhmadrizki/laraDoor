@@ -57,6 +57,21 @@ class Pagination
         $currentPage = $this->page;
         $total       = ceil($this->total / $this->perPage);
 
-        return view('pagination', compact('total', 'currentPage', 'getUrl'));
+        $start       = $currentPage - 2;
+        $end         = $currentPage + 2;
+
+        if ($end > $total) {
+            $start -= ($end - $total);
+            $end = $total;
+        }
+
+        if ($start <= 0) {
+            $end += (($start - 1) * (-1)); // 5
+            $start = 1;
+        }
+
+        $end = $end > $total ? $total : $end;
+
+        return view('pagination', compact('total', 'currentPage', 'getUrl', 'start', 'end'));
     }
 }

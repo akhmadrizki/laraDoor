@@ -9,7 +9,7 @@
             </li>
         <?php endif; ?>
 
-        <?php for ($i = 1; $i <= $total; $i++) : ?>
+        <?php for ($i = $start; $i <= $end; $i++) : ?>
             <li class="page-item">
                 <?php if ($i == $currentPage) : ?>
                     <span class="page-link active">
