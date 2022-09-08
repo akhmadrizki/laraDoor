@@ -51,5 +51,7 @@ class HomePageController
 		$insert = new MessageService;
 
 		$insert->store($data);
+
+		return redirect('/');
 	}
 }
