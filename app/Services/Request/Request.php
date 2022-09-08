@@ -15,14 +15,24 @@ class Request
 		return $_SERVER['REQUEST_METHOD'];
 	}
 
-	public function only(array $attributes): array
+	public function input(string $key, mixed $default = null): mixed
+	{
+		return isset($_POST[$key]) ? trim(string: $_POST[$key]) : $default;
+	}
+
+	public function only(array $keys): array
 	{
 		$arr = [];
 
-		foreach ($attributes as $attribute) {
-			$arr[$attribute] = trim($_POST[$attribute]);
+		foreach ($keys as $key) {
+			$arr[$key] = $this->input($key);
 		}
 
 		return $arr;
+	}
+
+	public function query(string $attribute, mixed $default = null): mixed
+	{
+		return isset($_GET[$attribute]) ? trim(string: $_GET[$attribute]) : $default;
 	}
 }

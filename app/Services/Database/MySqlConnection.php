@@ -49,4 +49,11 @@ class MySqlConnection
 
 		return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
+
+	public function fetchColumn()
+	{
+		$this->execute();
+
+		return $this->stmt->fetchColumn();
+	}
 }

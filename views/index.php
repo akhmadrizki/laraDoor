@@ -55,7 +55,7 @@
     </form>
 
     <?php if ($posts) : ?>
-      <?php foreach ($posts as $post) : ?>
+      <?php foreach ($posts->getData() as $post) : ?>
         <div class="showData border-top py-4">
           <div class="row">
             <div class="col-8">
@@ -80,23 +80,7 @@
       </div>
     <?php endif; ?>
 
-    <hr>
-
-    <?php if ($current != 1) : ?>
-      <a href="?page=<?= $current - 1; ?>">&laquo;</a>
-    <?php endif; ?>
-
-    <?php for ($i = 1; $i <= $pages; $i++) : ?>
-      <?php if ($i == $current) : ?>
-        <a><?= $i; ?></a>
-      <?php else : ?>
-        <a href="?page=<?= $i; ?>"><?= $i; ?></a>
-      <?php endif; ?>
-    <?php endfor; ?>
-
-    <?php if ($current != $pages) : ?>
-      <a href="?page=<?= $current + 1; ?>">&raquo;</a>
-    <?php endif; ?>
+    <?= $posts->showPagination() ?>
 
   </div>
 </body>
