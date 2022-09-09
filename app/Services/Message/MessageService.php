@@ -45,15 +45,14 @@ class MessageService
 		$query->table('posts')->insert($data);
 	}
 
-	public function paginate(int $perPage, int $page): Pagination
+	public function paginate(int $perPage, int $page, int $onEachSide): Pagination
 	{
 		$pagination = new QueryBuilder;
 
 		$query      = $pagination->from(Message::getTable())->select(['*'])->orderBy('created_at', 'DESC');
 
 		// dd($query);
-
-		$paginator = Pagination::make($query, $perPage, $page);
+		$paginator = Pagination::make($query, $perPage, $page, $onEachSide);
 
 		$paginator->setFormater(function (array $value) {
 			return new Message(

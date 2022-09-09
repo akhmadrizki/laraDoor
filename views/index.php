@@ -80,7 +80,7 @@
       </div>
     <?php endif; ?>
 
-    <?= $posts->showPagination() ?>
+    <?= $posts->returnPagination() ?>
 
   </div>
 </body>
