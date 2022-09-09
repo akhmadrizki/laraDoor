@@ -11,34 +11,62 @@ class Pagination
         protected int $perPage,
         protected int $page,
         protected int $total,
+        protected int $onEachSide,
         protected $formatFunction = null,
     ) {
     }
 
-    public static function make(QueryBuilder $query, int $perPage, int $page): static
+    public static function make(QueryBuilder $query, int $perPage, int $page, int $onEachSide): static
     {
-        $total = $query->count();
+        $page    = max(1, $page);
+        $perPage = max(1, $perPage);
+        $total   = $query->count();
 
-        $totalPaginate = ceil($total / $perPage);
-
-        if ($page > $totalPaginate) {
-            $page = $totalPaginate;
-        }
-
-        if ($page < 1) {
-            $page = 1;
-        }
-
-        $offset = ($page - 1) * $perPage;
-        $data   = $query->limit($offset, $perPage)->get();
+        $offset  = ($page - 1) * $perPage;
+        $data    = $query->limit($offset, $perPage)->get();
 
         // dd($data);
-        return new static(data: $data, perPage: $perPage, page: $page, total: $total);
+        return new static(data: $data, perPage: $perPage, page: $page, total: $total, onEachSide: $onEachSide);
+    }
+
+    public function currentPage()
+    {
+        return $this->page;
+    }
+
+    public function getTotalPage(): int
+    {
+        return ceil($this->total / $this->perPage);
+    }
+
+    public function isEmpty(): bool
+    {
+        return $this->getTotalPage() <= 1;
+    }
+
+    public function hasPrevious(): bool
+    {
+        return $this->page != 1;
+    }
+
+    public function hasNext(): bool
+    {
+        return $this->page != $this->getTotalPage();
     }
 
     public static function getUrlParam(): string
     {
         return "page";
+    }
+
+    public function nextPage(): string
+    {
+        return "?" . (static::getUrlParam()) . "=" . $this->page + 1;
+    }
+
+    public function previousPage(): string
+    {
+        return "?" . (static::getUrlParam()) . "=" . $this->page - 1;
     }
 
     public function setFormater($value)
@@ -51,27 +79,39 @@ class Pagination
         return array_map($this->formatFunction, $this->data);
     }
 
-    public function showPagination()
+    public function buildPaginations(): array
     {
-        $getUrl      = $this->getUrlParam();
-        $currentPage = $this->page;
-        $total       = ceil($this->total / $this->perPage);
+        $total = $this->getTotalPage();
 
-        $start       = $currentPage - 2;
-        $end         = $currentPage + 2;
+        $start = $this->currentPage() - $this->onEachSide;
+        $start = max(1, $start);
 
-        if ($end > $total) {
-            $start -= ($end - $total);
-            $end = $total;
+        $end   = ($this->onEachSide * 2) + $start;
+        $end   = min($end, $total);
+
+        $toPage = $end;
+
+        if ($toPage === $total) {
+            $start = $toPage - ($this->onEachSide * 2);
+            $start = max(1, $start);
         }
 
-        if ($start <= 0) {
-            $end += (($start - 1) * (-1)); // 5
-            $start = 1;
+        $pages = [];
+
+        for ($page = $start; $page <= $toPage; $page++) {
+            $pages[] = $page;
         }
 
-        $end = $end > $total ? $total : $end;
+        return $pages;
+    }
 
-        return view('pagination', compact('total', 'currentPage', 'getUrl', 'start', 'end'));
+    public function pageLink(int $paginate): string
+    {
+        return "?" . (static::getUrlParam()) . "=" . $paginate;
+    }
+
+    public function returnPagination()
+    {
+        return view('pagination', ['pagination' => $this]);
     }
 }

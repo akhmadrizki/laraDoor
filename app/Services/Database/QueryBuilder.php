@@ -145,7 +145,7 @@ class QueryBuilder
 		return $query .= $offset . ',' . $limit;
 	}
 
-	public function count()
+	public function count(): int
 	{
 		$tabelName = join(',', $this->select);
 
@@ -153,7 +153,6 @@ class QueryBuilder
 		// dd($query);
 		$this->db->query($query);
 		$this->db->execute();
-		$this->db->fetchColumn();
 
 		return $this->db->fetchColumn();
 	}

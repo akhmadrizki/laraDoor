@@ -21,7 +21,7 @@ class HomePageController
 			$getRequest = 1;
 		}
 
-		$posts    = $messService->paginate(3, $getRequest);
+		$posts    = $messService->paginate(10, $getRequest, 2);
 
 		return view('index', compact('posts'));
 	}
