@@ -5,7 +5,17 @@
     <div class="section">
         <div class="container">
             <div class="row">
+
                 <div class="col-md-6 col-md-offset-3 bg-white p-30 box">
+                    @if (session('message'))
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        {{ session('message') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    @endif
+
                     <div class="text-center">
                         <h1 class="text-green mb-30"><b>Level 8 Challenge</b></h1>
                     </div>
@@ -38,12 +48,8 @@
                     </form>
 
                     <hr>
-                    @if (count($posts) == 0)
-                    <h3 class="text-center text-green">No Post</h3>
-                    <img src="{{ asset('img/empty.png') }}" width="100%" alt="empty image">
-                    @else
 
-                    @foreach ($posts as $post)
+                    @forelse ($posts as $post)
                     <div class="post">
                         <div class="clearfix">
                             <div class="pull-left">
@@ -56,29 +62,16 @@
                                 </p>
                             </div>
                         </div>
-                        <p>{{ $post->body }}</p>
+                        <p>{!! nl2br($post->body) !!}</p>
                     </div>
-                    @endforeach
-                    @endif
+                    @empty
+                    <h3 class="text-center text-green">No Post</h3>
+                    <img src="{{ asset('img/empty.png') }}" width="100%" alt="empty image">
+                    @endforelse
 
                     <div class="text-center">
-                        {{ $posts->onEachSide(5)->links('vendor.pagination.default') }}
+                        {{ $posts->onEachSide(5)->links() }}
                     </div>
-                    {{-- <div class="text-center mt-30">
-                        <nav>
-                            <ul class="pagination">
-                                <li><a href="#">&laquo;</a></li>
-                                <li><a href="#">&lsaquo;</a></li>
-                                <li class="active"><a href="#">1</a></li>
-                                <li><a href="#">2</a></li>
-                                <li><a href="#">3</a></li>
-                                <li><a href="#">4</a></li>
-                                <li><a href="#">5</a></li>
-                                <li><a href="#">&rsaquo;</a></li>
-                                <li><a href="#">&raquo;</a></li>
-                            </ul>
-                        </nav>
-                    </div> --}}
 
                 </div>
             </div>

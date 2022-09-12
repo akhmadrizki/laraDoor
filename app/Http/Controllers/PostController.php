@@ -6,6 +6,7 @@ use App\Http\Requests\PostStoreRequest;
 use App\Models\Post;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
@@ -16,7 +17,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::latest()->paginate(2);
+        $posts = Post::latest()->paginate(10);
+
         return view('index', compact('posts'));
     }
 
@@ -38,25 +40,22 @@ class PostController extends Controller
      */
     public function store(PostStoreRequest $request)
     {
-        date_default_timezone_set('Asia/Makassar');
+        DB::beginTransaction();
 
         try {
-            $validated = $request->safe()->only(['title', 'body']);
+            Post::create($request->safe(['title', 'body']));
 
-            $fields = [
-                'title' => $validated['title'],
-                'body'  => $validated['body']
-            ];
-
-            Post::create($fields);
-
-            return redirect()->route('post.index')->with([
-                'message' => 'Data berhasil ditambahkan',
-                'status'  => 'success',
-            ]);
+            DB::commit();
         } catch (Exception $error) {
-            return redirect()->route('post.index')->with('message', $error->getMessage());
+            DB::rollBack();
+
+            return redirect()->route('post.index')->with('message', "Data gagal dibuat");
         }
+
+        return redirect()->route('post.index')->with([
+            'message' => 'Data berhasil ditambahkan',
+            'status'  => 'success',
+        ]);
     }
 
     /**
