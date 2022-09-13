@@ -23,6 +23,17 @@
                     <form action="{{ route('post.store') }}" method="POST">
                         @csrf
                         <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
+                                value="{{ old('name') }}">
+                            @error('name')
+                            <span class="invalid-feedback text-danger" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
                             <label>Title</label>
                             <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
                                 value="{{ old('title') }}">
@@ -62,6 +73,7 @@
                                 </p>
                             </div>
                         </div>
+                        <h4 class="mb-20">{{ $post->name }}</h4>
                         <p>{!! nl2br($post->body) !!}</p>
                     </div>
                     @empty

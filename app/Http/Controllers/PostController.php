@@ -43,7 +43,7 @@ class PostController extends Controller
         DB::beginTransaction();
 
         try {
-            Post::create($request->safe(['title', 'body']));
+            Post::create($request->safe(['name', 'title', 'body']));
 
             DB::commit();
         } catch (Exception $error) {

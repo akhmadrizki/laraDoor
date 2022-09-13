@@ -24,6 +24,7 @@ class PostStoreRequest extends FormRequest
     public function rules()
     {
         return [
+            'name'  => ['required', 'string', 'min:3', 'max:16'],
             'title' => ['required', 'string', 'min:10', 'max:32'],
             'body'  => ['required', 'string', 'min:10', 'max:200'],
         ];
@@ -37,6 +38,10 @@ class PostStoreRequest extends FormRequest
     public function messages()
     {
         return [
+            'name.required' => "Sorry the name can't be null",
+            'name.min'      => 'Your name must be 3 to 16 characters long',
+            'name.max'      => 'Your name must be 3 to 16 characters long',
+
             'title.required' => "Sorry the title can't be null",
             'title.min'      => 'Your title must be 10 to 32 characters long',
             'title.max'      => 'Your title must be 10 to 32 characters long',
