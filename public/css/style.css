@@ -128,8 +128,8 @@ textarea {
 }
 
 .img-box {
-  max-width: 500px;
-  max-height: 300px;
+  width: 500px;
+  height: 300px;
   margin: 0 auto;
 }
 

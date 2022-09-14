@@ -19,11 +19,14 @@
 
     @yield('content')
 
+    @yield('modal')
+
     @include('layouts.footer')
 
     <!-- Javascript -->
     <script type="text/javascript" src="{{ asset('js/jquery.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
+    @yield('js')
 </body>
 
 </html>
