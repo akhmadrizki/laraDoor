@@ -52,6 +52,8 @@ class PostStoreRequest extends FormRequest
             'body.min'          => 'Your body must be 10 to 200 characters long',
             'body.max'          => 'Your body must be 10 to 200 characters long',
 
+            'image.max'         => 'Your image is only valid 1MB or less',
+
             'password.integer'  => 'Password input type must be a number',
             'password.min'      => 'Your password must be 4 digit number',
         ];

@@ -65,12 +65,12 @@
                                             multiple>
                                     </span>
                                 </span>
-                                @error('image')
-                                <span class="invalid-feedback text-danger" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
                             </div>
+                            @error('image')
+                            <span class="invalid-feedback text-danger" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
                         </div>
 
                         <div class="form-group">
@@ -164,8 +164,6 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
-                    {{-- <input type="hidden" name="id" value="{{ session('getPost')->id ?? session('error') }}"> --}}
-
                     <div class="form-group">
                         <label>Name</label>
                         <input type="text" name="nameUpdate" class="form-control"
@@ -213,12 +211,12 @@
                                                 name="imageUpdate" multiple>
                                         </span>
                                     </span>
-                                    @error('imageUpdate')
-                                    <span class="invalid-feedback text-danger" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
                                 </div>
+                                @error('imageUpdate')
+                                <span class="invalid-feedback text-danger" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
                             <div class="checkbox">
                                 <label>

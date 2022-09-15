@@ -46,4 +46,31 @@ class PostUpdateRequest extends FormRequest
             session()->flash('getPost', $post);
         }
     }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'nameUpdate.required'     => "Sorry the name can't be null",
+            'nameUpdate.min'          => 'Your name must be 3 to 16 characters long',
+            'nameUpdate.max'          => 'Your name must be 3 to 16 characters long',
+
+            'titleUpdate.required'    => "Sorry the title can't be null",
+            'titleUpdate.min'         => 'Your title must be 10 to 32 characters long',
+            'titleUpdate.max'         => 'Your title must be 10 to 32 characters long',
+
+            'bodyUpdate.required'     => "Sorry the body can't be null",
+            'bodyUpdate.min'          => 'Your body must be 10 to 200 characters long',
+            'bodyUpdate.max'          => 'Your body must be 10 to 200 characters long',
+
+            'imageUpdate.max'         => 'Your image is only valid 1MB or less',
+
+            'passwordUpdate.integer'  => 'Password input type must be a number',
+            'passwordUpdate.min'      => 'Your password must be 4 digit number',
+        ];
+    }
 }
