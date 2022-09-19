@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\UploadFileException;
 use App\Http\Requests\PostStoreRequest;
 use App\Http\Requests\PostUpdateRequest;
 use App\Models\Post;
@@ -47,42 +48,20 @@ class PostController extends Controller
 
         try {
 
-            $validated = $request->safe(['name', 'title', 'body', 'password']);
-
-            $fields = [
-                'name'     => $validated['name'],
-                'title'    => $validated['title'],
-                'body'     => $validated['body'],
-            ];
-
-            if (!is_null($request->password)) {
-                $fields['password'] = Hash::make($validated['password']);
-            }
-
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $fileName = time() . '.' . $image->getClientOriginalExtension();
-                // $request->file('image')->storeAs('public/img', $fileName);
-
-                Storage::putFileAs(
-                    'public/img',
-                    $image,
-                    $fileName
-                );
-
-                $fields['image'] = $fileName;
-            }
-
-            Post::create($fields);
-
-            // Post::create($request->safe(['name', 'title', 'body', 'password', 'image']));
+            Post::create($request->safe(['name', 'title', 'body', 'password', 'image']));
 
             DB::commit();
         } catch (Exception $error) {
             DB::rollBack();
 
+            $message = "Data gagal ditambahkan 😭";
+
+            if ($error instanceof UploadFileException) {
+                $message = $error->getMessage();
+            }
+
             // $error->getMessage()
-            return redirect()->route('post.index')->with('message', "Data gagal ditambahkan 😭");
+            return redirect()->route('post.index')->with('message', $message);
         }
 
         return redirect()->route('post.index')->with([
@@ -127,45 +106,50 @@ class PostController extends Controller
         try {
 
             $getPost = Post::findOrFail($id);
-            $validated = $request->safe(['nameUpdate', 'titleUpdate', 'bodyUpdate', 'passwordUpdate']);
+            $validated = $request->safe(['nameUpdate', 'titleUpdate', 'bodyUpdate', 'deleteImage', 'imageUpdate']);
 
-            $fields = [
-                'name'     => $validated['nameUpdate'],
-                'title'    => $validated['titleUpdate'],
-                'body'     => $validated['bodyUpdate'],
-            ];
+            // $fields = [
+            //     'name'     => $validated['nameUpdate'],
+            //     'title'    => $validated['titleUpdate'],
+            //     'body'     => $validated['bodyUpdate'],
+            // ];
 
-            if (!is_null($request->passwordUpdate)) {
-                $fields['password'] = Hash::make($validated['passwordUpdate']);
-            }
+            $getPost->name = $validated['nameUpdate'];
+            $getPost->title = $validated['titleUpdate'];
+            $getPost->body = $validated['bodyUpdate'];
+            $getPost->image = $validated['imageUpdate'] ?? null;
 
-            if ($request->has('isDeleted')) {
-                Storage::delete('public/img/' . $getPost->image);
-                $fields['image'] = null;
-            }
+            $getPost->deleteImage = $validated['deleteImage'] ?? false;
 
-            if ($request->hasFile('imageUpdate')) {
-                $image = $request->file('imageUpdate');
-                $fileName = time() . '.' . $image->getClientOriginalExtension();
-                // $request->file('image')->storeAs('public/img', $fileName);
+            // dd($getPost->deleteImage);
 
-                Storage::putFileAs(
-                    'public/img',
-                    $image,
-                    $fileName
-                );
+            // if ($request->has('isDeleted')) {
+            //     Storage::delete('public/img/' . $getPost->image);
+            //     $fields['image'] = null;
+            // }
 
-                $fields['image'] = $fileName;
-            }
+            // if ($request->hasFile('imageUpdate')) {
+            //     $image = $request->file('imageUpdate');
+            //     $fileName = time() . '.' . $image->getClientOriginalExtension();
+            //     // $request->file('image')->storeAs('public/img', $fileName);
 
-            $getPost->update($fields);
+            //     Storage::putFileAs(
+            //         'public/img',
+            //         $image,
+            //         $fileName
+            //     );
+
+            //     $fields['image'] = $fileName;
+            // }
+
+            $getPost->save();
 
             // Post::create($request->safe(['name', 'title', 'body', 'password', 'image']));
 
             DB::commit();
         } catch (Exception $error) {
             DB::rollBack();
-
+            // throw $error;
             // $error->getMessage()
             return redirect()->route('post.index')->with('message', "Data gagal ditambahkan 😭");
         }
@@ -184,9 +168,13 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        $post = Post::findOrFail($id);
-        Storage::delete('public/img/' . $post->image);
-        $post->delete();
+        try {
+            $post = Post::findOrFail($id);
+
+            $post->delete();
+        } catch (Exception $error) {
+            return redirect()->route('post.index')->with('message', $error->getMessage());
+        }
 
         return redirect()->back()->with([
             'message' => 'Data berhasil dihapus',

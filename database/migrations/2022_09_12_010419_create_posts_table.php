@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('title');
             $table->longText('body');
             $table->string('password')->nullable();
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

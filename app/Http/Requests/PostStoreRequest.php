@@ -28,7 +28,7 @@ class PostStoreRequest extends FormRequest
             'title'    => ['required', 'string', 'min:10', 'max:32'],
             'body'     => ['required', 'string', 'min:10', 'max:200'],
             'image'    => ['mimes:jpg,png,jpeg,gif', 'max:1000'],
-            'password' => ['nullable', 'integer', 'min:4'],
+            'password' => ['nullable', 'numeric', 'digits:4'],
         ];
     }
 
@@ -40,22 +40,21 @@ class PostStoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'name.required'     => "Sorry the name can't be null",
-            'name.min'          => 'Your name must be 3 to 16 characters long',
-            'name.max'          => 'Your name must be 3 to 16 characters long',
+            'name.required'   => "Sorry the name can't be null",
+            'name.min'        => 'Your name must be 3 to 16 characters long',
+            'name.max'        => 'Your name must be 3 to 16 characters long',
 
-            'title.required'    => "Sorry the title can't be null",
-            'title.min'         => 'Your title must be 10 to 32 characters long',
-            'title.max'         => 'Your title must be 10 to 32 characters long',
+            'title.required'  => "Sorry the title can't be null",
+            'title.min'       => 'Your title must be 10 to 32 characters long',
+            'title.max'       => 'Your title must be 10 to 32 characters long',
 
-            'body.required'     => "Sorry the body can't be null",
-            'body.min'          => 'Your body must be 10 to 200 characters long',
-            'body.max'          => 'Your body must be 10 to 200 characters long',
+            'body.required'   => "Sorry the body can't be null",
+            'body.min'        => 'Your body must be 10 to 200 characters long',
+            'body.max'        => 'Your body must be 10 to 200 characters long',
 
-            'image.max'         => 'Your image is only valid 1MB or less',
+            'image.max'       => 'Your image is only valid 1MB or less',
 
-            'password.integer'  => 'Password input type must be a number',
-            'password.min'      => 'Your password must be 4 digit number',
+            'password.digits' => 'Your password must be 4 digit number',
         ];
     }
 }

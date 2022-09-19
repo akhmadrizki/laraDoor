@@ -98,30 +98,29 @@
                                 <h2 class="mb-5 text-green"><b>{{ $post->title }}</b></h2>
                             </div>
                             <div class="pull-right text-right">
-                                <p class="text-lgray">{{ date( 'd-m-Y', strtotime($post->created_at)) }}
+                                <p class="text-lgray">{{$post->created_at->format('d-m-Y')}}
                                     <br />
-                                    <span class="small">{{ date( 'H:i', strtotime($post->created_at)) }}</span>
+                                    <span class="small">{{$post->created_at->format('H:i')}}</span>
                                 </p>
                             </div>
                         </div>
                         <h4 class="mb-20">{{ $post->name }}</h4>
                         <p>{!! nl2br($post->body) !!}</p>
+
+                        @if (!is_null($post->getImageAsset()))
                         <div class="img-box my-10">
-                            <img class="img-responsive img-post"
-                                src=" {{ $post->image == null ? 'https://empowher.org/wp-content/uploads/2021/03/image-placeholder-350x350-1.png' : asset('storage/img/'.$post->image) }}"
-                                alt="image">
+                            <img class="img-responsive img-post" src=" {{ $post->getImageAsset() }}" alt="image">
                         </div>
+                        @endif
 
                         <form class="form-inline mt-50" action="{{ route('pass.validate') }}" method="POST">
                             @csrf
                             <div class="form-group mx-sm-3 mb-2">
                                 <input type="hidden" name="id" value="{{ $post->id }}">
 
-                                @if (!is_null($post->password))
                                 <label for="inputPassword2" class="sr-only">Password</label>
                                 <input type="password" name="passVerify" class="form-control" id="inputPassword2"
                                     placeholder="Password">
-                                @endif
                             </div>
                             <button type="submit" name="editBtn" class="btn btn-default mb-2"><i
                                     class="fa fa-pencil p-3"></i></button>

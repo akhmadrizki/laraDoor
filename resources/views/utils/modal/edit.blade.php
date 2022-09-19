@@ -45,9 +45,10 @@
                     </div>
                     <div class="form-group row">
                         <div class="col-md-4">
-                            <img class="img-responsive" alt="image" src="{{ session('getPost')->image == null ?
-                            'https://empowher.org/wp-content/uploads/2021/03/image-placeholder-350x350-1.png' :
-                            asset('storage/img/'.session('getPost')->image) }}">
+                            @if (!is_null(session('getPost')->image))
+                            <img class="img-responsive" alt="image"
+                                src="{{ asset('storage/img/'.session('getPost')->image) }}">
+                            @endif
                         </div>
                         <div class="col-md-8 pl-0">
                             <div class="form-group">
@@ -67,21 +68,14 @@
                                 </span>
                                 @enderror
                             </div>
+                            @if (!is_null(session('getPost')->image))
                             <div class="checkbox">
                                 <label>
-                                    <input name="isDeleted" type="checkbox">Delete image
+                                    <input name="deleteImage" value="true" type="checkbox">Delete image
                                 </label>
                             </div>
+                            @endif
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" name="passwordUpdate" class="form-control">
-                        @error('passwordUpdate')
-                        <span class="invalid-feedback text-danger" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
                     </div>
                 </div>
                 <div class="modal-footer">
