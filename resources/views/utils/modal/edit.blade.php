@@ -1,4 +1,5 @@
-@if (session('editPass') || $errors->hasAny('nameUpdate', 'titleUpdate', 'bodyUpdate', 'imageUpdate', 'passwordUpdate'))
+@if (session('editPass') || $errors->updatePost->hasAny('name', 'title', 'body', 'image',
+'password'))
 <div class="modal fade" id="editModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
     aria-hidden="true">
     <div class="modal-dialog">
@@ -15,9 +16,9 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Name</label>
-                        <input type="text" name="nameUpdate" class="form-control"
-                            value="{{ old('nameUpdate') ?? session('getPost')->name }}">
-                        @error('nameUpdate')
+                        <input type="text" name="name" class="form-control"
+                            value="{{ old('name') ?? session('getPost')->name }}">
+                        @error('name', 'updatePost')
                         <span class="invalid-feedback text-danger" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>
@@ -25,9 +26,9 @@
                     </div>
                     <div class="form-group">
                         <label>Title</label>
-                        <input type="text" name="titleUpdate" class="form-control"
-                            value="{{ session('getPost')->title ?? old('titleUpdate') }}">
-                        @error('titleUpdate')
+                        <input type="text" name="title" class="form-control"
+                            value="{{ session('getPost')->title ?? old('title') }}">
+                        @error('title', 'updatePost')
                         <span class="invalid-feedback text-danger" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>
@@ -35,9 +36,9 @@
                     </div>
                     <div class="form-group">
                         <label>Body</label>
-                        <textarea rows="5" name="bodyUpdate"
-                            class="form-control">{{ session('getPost')->body ?? old('bodyUpdate') }}</textarea>
-                        @error('bodyUpdate')
+                        <textarea rows="5" name="body"
+                            class="form-control">{{ session('getPost')->body ?? old('body') }}</textarea>
+                        @error('body', 'updatePost')
                         <span class="invalid-feedback text-danger" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>
@@ -58,11 +59,11 @@
                                     <span class="input-group-btn">
                                         <span class="btn btn-default btn-file">
                                             <i class="fa fa-folder-open"></i>&nbsp;Browse <input type="file"
-                                                name="imageUpdate" multiple>
+                                                name="image" multiple>
                                         </span>
                                     </span>
                                 </div>
-                                @error('imageUpdate')
+                                @error('image', 'updatePost')
                                 <span class="invalid-feedback text-danger" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

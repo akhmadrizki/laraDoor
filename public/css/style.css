@@ -173,6 +173,10 @@ textarea {
   font-size: 14px;
 }
 
+.pre-line {
+  white-space: pre-line;
+}
+
 /*Form*/
 .form-control {
   border: none;

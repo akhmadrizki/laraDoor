@@ -25,11 +25,20 @@ class Post extends Model
     ];
 
     // static method
-    protected $fileUpload = [
-        'name' => 'image',
-        'path' => 'img',
-        'disk' => 'public',
-    ];
+    public function fileColumn(): string
+    {
+        return 'image';
+    }
+
+    public function filePath(): string
+    {
+        return 'img';
+    }
+
+    public function getStorageName(): string
+    {
+        return 'public';
+    }
 
     public $deleteImage = false;
 

@@ -3,9 +3,12 @@
 namespace App\Models\Concerns;
 
 use App\Exceptions\UploadFileException;
+use App\Jobs\DeletedFile;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Nette\Utils\FileSystem;
 
 trait UploadedFiles
 {
@@ -14,117 +17,125 @@ trait UploadedFiles
      *
      * @return void
      */
-    protected static function booted()
+    public static function bootUploadedFiles()
     {
-        // parent::booted();
         static::saving(function (Model $model) {
 
             // dd($model->deleteImage);
             if ($model->deleteImage) {
-                if (!is_null($model->image)) {
-                    Storage::disk($model->fileUpload['disk'])->delete($model->fileUpload['path'] . '/' . $model->image);
+                if (!is_null($model->fileColumn())) {
+                    $model->deletePreviousFile();
                 }
 
-                $model->image = null;
+                $model->setAttribute($model->fileColumn(), null);
 
                 return;
             }
 
-            if ($model->isDirty($model->fileUpload['name'])) {
-                // $image = $model->image;
-                $image = $model->getAttribute($model->fileUpload['name']);
-                // dd($image);
+            if ($model->isDirty($model->fileColumn())) {
+
+
+
+                $image = $model->getAttribute($model->fileColumn());
 
                 if ($image instanceof UploadedFile) {
-                    $filename = $image->hashName();
+                    $model->saveFile($image);
 
-                    $uploaded = $image->storeAs(
-                        path: $model->fileUpload['path'],
-                        name: $filename,
-                        options: $model->fileUpload['disk']
-                    );
-
-                    if (!$uploaded) {
-                        throw new UploadFileException("Uploaded image fail", 1);
-                    }
-
-                    $model->setAttribute($model->fileUpload['name'], $filename);
-
-                    if (!is_null($model->getOriginal($model->fileUpload['name']))) {
-                        Storage::disk($model->fileUpload['disk'])->delete($model->fileUpload['path'] . '/' . $model->getOriginal($model->fileUpload['name']));
+                    if ($model->hasPreviousFile()) {
+                        $model->deletePreviousFile();
                     }
                 } else {
-                    $model->setAttribute($model->fileUpload['name'], $model->getOriginal($model->fileUpload['name']));
+                    $model->setAttribute($model->fileColumn(), $model->getRawOriginal($model->fileColumn()));
                 }
             }
         });
 
         static::deleting(function (Model $model) {
-            if (!is_null($model->getAttribute($model->fileUpload['name']))) {
-                Storage::disk($model->fileUpload['disk'])->delete($model->fileUpload['path'] . '/' . $model->getAttribute($model->fileUpload['name']));
-            }
+            $model->deletePreviousFile();
         });
+    }
+
+    public function saveFile(UploadedFile $image): void
+    {
+        $filename = $this->getUploadedFileName(file: $image);
+
+        $uploaded = $image->storeAs(
+            path: $this->filePath(),
+            name: $filename,
+            options: $this->getStorageName()
+        );
+
+        if (!$uploaded) {
+            throw new UploadFileException($this->getFailedMessage(), 1);
+        }
+
+        $this->setAttribute($this->fileColumn(), $filename);
+
+        if (!is_null($this->getOriginal($this->fileColumn()))) {
+            Storage::disk($this->getStorageName())->delete($this->filePath() . '/' . $this->getOriginal($this->fileColumn()));
+        }
+    }
+
+    public function fileColumn(): string
+    {
+        return 'image';
+    }
+
+    public function getUploadedFileName(UploadedFile $file): string
+    {
+        return $file->hashName();
+    }
+
+    public function filePath(): string
+    {
+        return 'img';
+    }
+
+    public function getStorageName(): string
+    {
+        return config('filesystems.default', 'public');
+    }
+
+    public function getFailedMessage(): string
+    {
+        return 'Failed to uploaded file';
+    }
+
+    public function hasFile(): bool
+    {
+        return !blank($this->getAttribute($this->fileColumn()));
+    }
+
+    public function getFileStorage(): FileSystem | FilesystemAdapter
+    {
+        return Storage::disk($this->getStorageName());
+    }
+
+    public function getFullFilePath(): string
+    {
+        return $this->filePath() . '/' . $this->getAttribute($this->fileColumn());
+    }
+
+    public function hasPreviousFile(): bool
+    {
+        return !blank($this->getRawOriginal($this->fileColumn()));
+    }
+
+    public function deletePreviousFile(): void
+    {
+        if (!$this->hasPreviousFile()) {
+            return;
+        }
+
+        DeletedFile::dispatch($this)->afterCommit();
     }
 
     public function getImageAsset(): ?string
     {
-        if (blank($this->image)) {
+        if (!$this->hasFile()) {
             return null;
         }
 
-        return Storage::disk($this->fileUpload['disk'])->url($this->fileUpload['path'] . '/' . $this->image);
+        return $this->getFileStorage()->url($this->getFullFilePath());
     }
-
-
-    // protected string $fieldName;
-    // protected string $fieldPath;
-    // protected string $fieldOption;
-
-    // /**
-    //  * The "booted" method of the model.
-    //  *
-    //  * @return void
-    //  */
-    // public static function savingImage($fieldName = 'image', $fieldPath = 'img', $fieldOption = 'public'): static
-    // {
-    //     $query = new static;
-
-    //     $query->fieldName = $fieldName;
-    //     $query->fieldPath = $fieldPath;
-    //     $query->fieldOption = $fieldOption;
-
-    //     // taro di trait (nanti disini cuma buat ganti dinamis path, options, name)
-    //     static::saving(function (Model $model) use ($query) {
-    //         if ($model->isDirty($query->fieldName)) {
-    //             $image = $model->image;
-
-    //             if ($image instanceof UploadedFile) {
-    //                 $filename = $image->hashName();
-
-    //                 $uploaded = $image->storeAs(
-    //                     path: 'img',
-    //                     name: $filename,
-    //                     options: 'public'
-    //                 );
-
-    //                 if (!$uploaded) {
-    //                     // di custom (UploadFileException)
-    //                     throw new UploadFileException("Error Processing Request", 1);
-    //                 }
-
-    //                 $model->image = $filename;
-    //             }
-    //         }
-    //     });
-    //     return $query;
-    // }
-
-    // public function getImageAsset(): string
-    // {
-    //     if (blank($this->image)) {
-    //         return null;
-    //     }
-
-    //     return Storage::disk('public')->url('img/' . $this->image);
-    // }
 }

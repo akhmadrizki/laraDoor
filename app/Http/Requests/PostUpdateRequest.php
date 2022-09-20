@@ -2,11 +2,17 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Post;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PostUpdateRequest extends FormRequest
 {
+    /**
+     * The key to be used for the view error bag.
+     *
+     * @var string
+     */
+    protected $errorBag = 'updatePost';
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,11 +31,12 @@ class PostUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'nameUpdate'     => ['required', 'string', 'min:3', 'max:16'],
-            'titleUpdate'    => ['required', 'string', 'min:10', 'max:32'],
-            'bodyUpdate'     => ['required', 'string', 'min:10', 'max:200'],
-            'imageUpdate'    => ['mimes:jpg,png,jpeg,gif', 'max:1000'],
-            'deleteImage'    => ['nullable'],
+            'name'     => ['required', 'string', 'min:3', 'max:16'],
+            'title'    => ['required', 'string', 'min:10', 'max:32'],
+            'body'     => ['required', 'string', 'min:10', 'max:200'],
+            'image'    => ['mimes:jpg,png,jpeg,gif', 'max:1000'],
+            'password' => ['nullable', 'numeric', 'digits:4'],
+            'deleteImage' => ['nullable'],
         ];
     }
 
@@ -42,7 +49,8 @@ class PostUpdateRequest extends FormRequest
     public function withValidator($validator)
     {
         if ($validator->fails()) {
-            $post = Post::where('id', $this->post)->first();
+            // $post = Post::where('id', $this->post)->first();
+            $post = $this->route('post');
             session()->flash('getPost', $post);
         }
     }
@@ -55,19 +63,21 @@ class PostUpdateRequest extends FormRequest
     public function messages()
     {
         return [
-            'nameUpdate.required'   => "Sorry the name can't be null",
-            'nameUpdate.min'        => 'Your name must be 3 to 16 characters long',
-            'nameUpdate.max'        => 'Your name must be 3 to 16 characters long',
+            'name.required'   => "Sorry the name can't be null",
+            'name.min'        => 'Your name must be 3 to 16 characters long',
+            'name.max'        => 'Your name must be 3 to 16 characters long',
 
-            'titleUpdate.required'  => "Sorry the title can't be null",
-            'titleUpdate.min'       => 'Your title must be 10 to 32 characters long',
-            'titleUpdate.max'       => 'Your title must be 10 to 32 characters long',
+            'title.required'  => "Sorry the title can't be null",
+            'title.min'       => 'Your title must be 10 to 32 characters long',
+            'title.max'       => 'Your title must be 10 to 32 characters long',
 
-            'bodyUpdate.required'   => "Sorry the body can't be null",
-            'bodyUpdate.min'        => 'Your body must be 10 to 200 characters long',
-            'bodyUpdate.max'        => 'Your body must be 10 to 200 characters long',
+            'body.required'   => "Sorry the body can't be null",
+            'body.min'        => 'Your body must be 10 to 200 characters long',
+            'body.max'        => 'Your body must be 10 to 200 characters long',
 
-            'imageUpdate.max'       => 'Your image is only valid 1MB or less',
+            'image.max'       => 'Your image is only valid 1MB or less',
+
+            'password.digits' => 'Your password must be 4 digit number',
         ];
     }
 }

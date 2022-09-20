@@ -10,7 +10,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -21,9 +20,11 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::latest()->paginate(2);
+        $posts     = Post::latest()->paginate(2);
 
-        return view('index', compact('posts'));
+        $fieldData = ['name', 'title', 'body', 'image', 'password'];
+
+        return view('index', compact('posts', 'fieldData'));
     }
 
     /**
@@ -47,7 +48,6 @@ class PostController extends Controller
         DB::beginTransaction();
 
         try {
-
             Post::create($request->safe(['name', 'title', 'body', 'password', 'image']));
 
             DB::commit();
@@ -99,59 +99,27 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(PostUpdateRequest $request, $id)
+    public function update(PostUpdateRequest $request, Post $post)
     {
         DB::beginTransaction();
 
         try {
+            $validated = $request->safe(['name', 'title', 'body', 'deleteImage', 'image']);
 
-            $getPost = Post::findOrFail($id);
-            $validated = $request->safe(['nameUpdate', 'titleUpdate', 'bodyUpdate', 'deleteImage', 'imageUpdate']);
+            $post->name  = $validated['name'];
+            $post->title = $validated['title'];
+            $post->body  = $validated['body'];
+            $post->image = $validated['image'] ?? null;
+            $post->deleteImage = $validated['deleteImage'] ?? false;
 
-            // $fields = [
-            //     'name'     => $validated['nameUpdate'],
-            //     'title'    => $validated['titleUpdate'],
-            //     'body'     => $validated['bodyUpdate'],
-            // ];
-
-            $getPost->name = $validated['nameUpdate'];
-            $getPost->title = $validated['titleUpdate'];
-            $getPost->body = $validated['bodyUpdate'];
-            $getPost->image = $validated['imageUpdate'] ?? null;
-
-            $getPost->deleteImage = $validated['deleteImage'] ?? false;
-
-            // dd($getPost->deleteImage);
-
-            // if ($request->has('isDeleted')) {
-            //     Storage::delete('public/img/' . $getPost->image);
-            //     $fields['image'] = null;
-            // }
-
-            // if ($request->hasFile('imageUpdate')) {
-            //     $image = $request->file('imageUpdate');
-            //     $fileName = time() . '.' . $image->getClientOriginalExtension();
-            //     // $request->file('image')->storeAs('public/img', $fileName);
-
-            //     Storage::putFileAs(
-            //         'public/img',
-            //         $image,
-            //         $fileName
-            //     );
-
-            //     $fields['image'] = $fileName;
-            // }
-
-            $getPost->save();
-
-            // Post::create($request->safe(['name', 'title', 'body', 'password', 'image']));
+            $post->save();
 
             DB::commit();
         } catch (Exception $error) {
             DB::rollBack();
             // throw $error;
             // $error->getMessage()
-            return redirect()->route('post.index')->with('message', "Data gagal ditambahkan 😭");
+            return redirect()->route('post.index')->with('message', $error->getMessage());
         }
 
         return redirect()->back()->with([
@@ -166,13 +134,17 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        try {
-            $post = Post::findOrFail($id);
+        DB::beginTransaction();
 
+        try {
             $post->delete();
+
+            DB::commit();
         } catch (Exception $error) {
+            DB::rollBack();
+
             return redirect()->route('post.index')->with('message', $error->getMessage());
         }
 

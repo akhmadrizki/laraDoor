@@ -24,9 +24,9 @@
                         @csrf
                         <div class="form-group">
                             <label>Name</label>
-                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                                value="{{ old('name') }}">
-                            @error('name')
+                            <input type="text" name="name" class="form-control"
+                                value="{{ $errors->storePost->hasAny($fieldData) ? old('name') : '' }}">
+                            @error('name', 'storePost')
                             <span class="invalid-feedback text-danger" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
@@ -35,9 +35,9 @@
 
                         <div class="form-group">
                             <label>Title</label>
-                            <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
-                                value="{{ old('title') }}">
-                            @error('title')
+                            <input type="text" name="title" class="form-control"
+                                value="{{ $errors->storePost->hasAny($fieldData) ? old('title') : '' }}">
+                            @error('title', 'storePost')
                             <span class="invalid-feedback text-danger" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
@@ -46,9 +46,9 @@
 
                         <div class="form-group">
                             <label>Body</label>
-                            <textarea rows="5" name="body" class="form-control" @error('body') is-invalid
-                                @enderror>{{ old('body') }}</textarea>
-                            @error('body')
+                            <textarea rows="5" name="body"
+                                class="form-control">{{ $errors->storePost->hasAny($fieldData) ? old('body') : '' }}</textarea>
+                            @error('body', 'storePost')
                             <span class="invalid-feedback text-danger" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
@@ -66,7 +66,7 @@
                                     </span>
                                 </span>
                             </div>
-                            @error('image')
+                            @error('image', 'storePost')
                             <span class="invalid-feedback text-danger" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
@@ -75,9 +75,9 @@
 
                         <div class="form-group">
                             <label>Password</label>
-                            <input type="password" name="password" class="form-control @error('password') is-invalid
+                            <input type="password" name="password" class="form-control @error('password', 'storePassword') is-invalid
                                 @enderror">
-                            @error('password')
+                            @error('password', 'storePost')
                             <span class="invalid-feedback text-danger" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
@@ -105,11 +105,11 @@
                             </div>
                         </div>
                         <h4 class="mb-20">{{ $post->name }}</h4>
-                        <p>{!! nl2br($post->body) !!}</p>
+                        <p class="pre-line">{{ ($post->body) }}</p>
 
                         @if (!is_null($post->getImageAsset()))
                         <div class="img-box my-10">
-                            <img class="img-responsive img-post" src=" {{ $post->getImageAsset() }}" alt="image">
+                            <img class="img-responsive img-post" src="{{ $post->getImageAsset() }}" alt="image">
                         </div>
                         @endif
 
