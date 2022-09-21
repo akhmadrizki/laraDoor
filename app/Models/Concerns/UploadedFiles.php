@@ -34,8 +34,6 @@ trait UploadedFiles
 
             if ($model->isDirty($model->fileColumn())) {
 
-
-
                 $image = $model->getAttribute($model->fileColumn());
 
                 if ($image instanceof UploadedFile) {
