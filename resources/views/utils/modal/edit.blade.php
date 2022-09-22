@@ -1,5 +1,4 @@
-@if (session('editPass') || $errors->updatePost->hasAny('name', 'title', 'body', 'image',
-'password'))
+@if (session('editPass') || $errors->updatePost->hasAny($fieldData))
 <div class="modal fade" id="editModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
     aria-hidden="true">
     <div class="modal-dialog">

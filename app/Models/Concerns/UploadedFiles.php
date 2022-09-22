@@ -70,7 +70,7 @@ trait UploadedFiles
         $this->setAttribute($this->fileColumn(), $filename);
 
         if (!is_null($this->getOriginal($this->fileColumn()))) {
-            Storage::disk($this->getStorageName())->delete($this->filePath() . '/' . $this->getOriginal($this->fileColumn()));
+            $this->deletePreviousFile();
         }
     }
 
@@ -119,6 +119,11 @@ trait UploadedFiles
         return !blank($this->getRawOriginal($this->fileColumn()));
     }
 
+    /**
+     * delete file with job after DB:commit operation
+     *
+     * @return void
+     */
     public function deletePreviousFile(): void
     {
         if (!$this->hasPreviousFile()) {
@@ -128,6 +133,11 @@ trait UploadedFiles
         DeletedFile::dispatch($this)->afterCommit();
     }
 
+    /**
+     * get the image file asset_url
+     *
+     * @return string|null
+     */
     public function getImageAsset(): ?string
     {
         if (!$this->hasFile()) {
