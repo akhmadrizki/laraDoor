@@ -1,4 +1,4 @@
-@if (session('deletePass'))
+@if (session('method') === 'delete')
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -8,12 +8,15 @@
                 <h4 class="modal-title" id="myModalLabel">Delete Data</h4>
             </div>
             <div class="modal-body pad-20">
-                <p>Are you sure want to delete <strong class="text-capitalize text-success">{{ session('getPost')->title
+                <p>
+                    Are you sure want to delete <strong class="text-capitalize text-success">{{ $post->title
                         }}?</strong>
                 </p>
             </div>
             <div class="modal-footer d-inline">
-                <form action="{{ route('post.destroy', session('getPost')->id) }}" method="POST">
+                <form action="{{ route('post.destroy', $post->id) }}" method="POST">
+                    <input type="hidden" name="secrect" value="{{ $post->secrect }}">
+
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     @method('DELETE')
                     @csrf
@@ -24,3 +27,11 @@
     </div>
 </div>
 @endif
+
+@section('js')
+<script>
+    $(document).ready(function(){
+        $("#deleteModal").modal('show');
+    });
+</script>
+@endsection

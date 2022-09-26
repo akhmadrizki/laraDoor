@@ -1,4 +1,5 @@
-@if (session('editPass') || $errors->updatePost->hasAny($fieldData))
+@if (session('method') === 'update')
+{{-- errors nya taro di old --}}
 <div class="modal fade" id="editModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
     aria-hidden="true">
     <div class="modal-dialog">
@@ -8,15 +9,14 @@
                         class="sr-only">Close</span></button>
                 <h4 class="modal-title" id="myModalLabel">Edit Item</h4>
             </div>
-            <form action="{{ route('post.update', session('getPost')->id) }}" method="POST"
-                enctype="multipart/form-data">
+            <form action="{{ route('post.update', $post->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
+                    <input type="hidden" name="secrect" value="{{ $post->secrect }}">
                     <div class="form-group">
                         <label>Name</label>
-                        <input type="text" name="name" class="form-control"
-                            value="{{ old('name') ?? session('getPost')->name }}">
+                        <input type="text" name="name" class="form-control" value="{{ old('name', $post->name) }}">
                         @error('name', 'updatePost')
                         <span class="invalid-feedback text-danger" role="alert">
                             <strong>{{ $message }}</strong>
@@ -25,8 +25,7 @@
                     </div>
                     <div class="form-group">
                         <label>Title</label>
-                        <input type="text" name="title" class="form-control"
-                            value="{{ session('getPost')->title ?? old('title') }}">
+                        <input type="text" name="title" class="form-control" value="{{ old('title', $post->title) }}">
                         @error('title', 'updatePost')
                         <span class="invalid-feedback text-danger" role="alert">
                             <strong>{{ $message }}</strong>
@@ -35,8 +34,7 @@
                     </div>
                     <div class="form-group">
                         <label>Body</label>
-                        <textarea rows="5" name="body"
-                            class="form-control">{{ session('getPost')->body ?? old('body') }}</textarea>
+                        <textarea rows="5" name="body" class="form-control">{{ old('body', $post->body) }}</textarea>
                         @error('body', 'updatePost')
                         <span class="invalid-feedback text-danger" role="alert">
                             <strong>{{ $message }}</strong>
@@ -44,12 +42,11 @@
                         @enderror
                     </div>
                     <div class="form-group row">
+                        @if ($post->hasFile())
                         <div class="col-md-4">
-                            @if (!is_null(session('getPost')->image))
-                            <img class="img-responsive" alt="image"
-                                src="{{ asset('storage/img/'.session('getPost')->image) }}">
-                            @endif
+                            <img class="img-responsive" alt="image" src="{{ asset('storage/img/'.$post->image) }}">
                         </div>
+                        @endif
                         <div class="col-md-8 pl-0">
                             <div class="form-group">
                                 <label>Choose image from your computer :</label>
@@ -68,7 +65,7 @@
                                 </span>
                                 @enderror
                             </div>
-                            @if (!is_null(session('getPost')->image))
+                            @if ($post->hasFile())
                             <div class="checkbox">
                                 <label>
                                     <input name="deleteImage" value="true" type="checkbox">Delete image
@@ -87,3 +84,11 @@
     </div>
 </div>
 @endif
+
+@section('js')
+<script>
+    $(document).ready(function(){
+        $("#editModal").modal('show');
+    });
+</script>
+@endsection

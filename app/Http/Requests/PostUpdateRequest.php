@@ -52,6 +52,7 @@ class PostUpdateRequest extends FormRequest
             // $post = Post::where('id', $this->post)->first();
             $post = $this->route('post');
             session()->flash('getPost', $post);
+            session()->flash('method', 'update');
         }
     }
 

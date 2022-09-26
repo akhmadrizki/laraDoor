@@ -8,7 +8,9 @@ use App\Http\Requests\PostUpdateRequest;
 use App\Models\Post;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 
 class PostController extends Controller
@@ -64,10 +66,8 @@ class PostController extends Controller
             return redirect()->route('post.index')->with('message', $message);
         }
 
-        return redirect()->route('post.index')->with([
-            'message' => 'Data berhasil ditambahkan',
-            'status'  => 'success',
-        ]);
+        flash('Data berhasil ditambahkan')->success();
+        return redirect()->route('post.index');
     }
 
     /**
@@ -104,12 +104,15 @@ class PostController extends Controller
         DB::beginTransaction();
 
         try {
+
+            if ($this->handleUpdateValidate($request->secrect) != $post) {
+                throw new \Exception;
+            }
+
             $validated = $request->safe(['name', 'title', 'body', 'deleteImage', 'image']);
 
-            $post->name  = $validated['name'];
-            $post->title = $validated['title'];
-            $post->body  = $validated['body'];
-            $post->image = $validated['image'] ?? null;
+            $post->fill($validated);
+
             $post->deleteImage = $validated['deleteImage'] ?? false;
 
             $post->save();
@@ -119,13 +122,19 @@ class PostController extends Controller
             DB::rollBack();
             // throw $error;
             // $error->getMessage()
-            return redirect()->route('post.index')->with('message', $error->getMessage());
+            flash('Gagal update')->error();
+            return redirect()->route('post.index');
         }
 
-        return redirect()->back()->with([
-            'message' => 'Data berhasil diupdate',
-            'status'  => 'success',
-        ]);
+        flash('Data berhasil diupdate')->success();
+        return redirect()->back();
+    }
+
+    public function handleUpdateValidate($request)
+    {
+        $getData = Crypt::decryptString($request);
+
+        return $getData;
     }
 
     /**
@@ -134,58 +143,57 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy(Request $request, Post $post)
     {
         DB::beginTransaction();
 
         try {
+            if ($this->handleUpdateValidate($request->secrect) != $post->id) {
+                throw new \Exception;
+            }
+
             $post->delete();
 
             DB::commit();
         } catch (Exception $error) {
             DB::rollBack();
 
-            return redirect()->route('post.index')->with('message', $error->getMessage());
+            flash('Gagal delete')->error();
+            return redirect()->route('post.index');
         }
 
-        return redirect()->back()->with([
-            'message' => 'Data berhasil dihapus',
-            'status' => 'success',
-        ]);
+        flash('Data berhasil dihapus')->success();
+        return redirect()->back();
     }
 
-    public function passValidation(Request $request)
+    public function passValidation(Request $request, Post $post)
     {
-        $getPost = Post::findOrFail($request->id);
+        $post->secrect = Crypt::encryptString($post->id);
 
-        $cekPassword = Hash::check($request->passVerify, $getPost->password);
-
-        if ($request->passVerify != null && $getPost->password == null) {
-            return redirect()->back()->with([
-                'message' => 'The passwords you entered do not match. Please try again.',
-                'status'  => 'danger',
-            ]);
-        }
-
-        if ($getPost->password != null && !$cekPassword) {
-            return redirect()->back()->with([
-                'message' => 'The passwords you entered do not match. Please try again.',
-                'status'  => 'danger',
-            ]);
-        }
+        $update = Gate::inspect('update', [$post, $request]);
+        $delete = Gate::inspect('delete', [$post, $request]);
 
         if ($request->has('editBtn')) {
+
+            if ($update->denied()) {
+                flash($update->message())->error();
+                return redirect()->back();
+            }
+
             return redirect()->back()->with([
-                'getPost'  => $getPost,
-                'editPass' => 'Show',
-                'status'   => 'success',
-            ]);
-        } else {
-            return redirect()->back()->with([
-                'getPost'  => $getPost,
-                'deletePass' => 'Show',
-                'status'   => 'success',
+                'getPost' => $post,
+                'method'  => 'update',
             ]);
         }
+
+        if ($delete->allowed()) {
+            return redirect()->back()->with([
+                'getPost' => $post,
+                'method'  => 'delete',
+            ]);
+        }
+
+        flash($delete->message())->error();
+        return redirect()->back();
     }
 }

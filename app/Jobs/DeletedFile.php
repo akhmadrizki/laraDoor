@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Storage;
 
 class DeletedFile implements ShouldQueue
 {
@@ -21,14 +22,17 @@ class DeletedFile implements ShouldQueue
      */
     public $model;
 
+    // buat pake database di queue
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Model $model)
-    {
-        $this->model = $model;
+    public function __construct(
+        protected string $filePath,
+        protected ?string $disk = null
+    ) {
     }
 
     /**
@@ -38,6 +42,6 @@ class DeletedFile implements ShouldQueue
      */
     public function handle()
     {
-        $this->model->getFileStorage()->delete($this->model->getFullFilePath());
+        Storage::disk($this->disk ?: config('filesystems.default'))->delete($this->filePath);
     }
 }

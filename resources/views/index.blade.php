@@ -7,14 +7,7 @@
             <div class="row">
 
                 <div class="col-md-6 col-md-offset-3 bg-white p-30 box">
-                    @if (session('message'))
-                    <div class="alert alert-{{ session('status') }} alert-dismissible" role="alert">
-                        {{ session('message') }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    @endif
+                    @include('flash::message')
 
                     <div class="text-center">
                         <h1 class="text-green mb-30"><b>Level 8 Challenge</b></h1>
@@ -113,11 +106,9 @@
                         </div>
                         @endif
 
-                        <form class="form-inline mt-50" action="{{ route('pass.validate') }}" method="POST">
+                        <form class="form-inline mt-50" action="{{ route('pass.validate', $post->id) }}" method="POST">
                             @csrf
                             <div class="form-group mx-sm-3 mb-2">
-                                <input type="hidden" name="id" value="{{ $post->id }}">
-
                                 <label for="inputPassword2" class="sr-only">Password</label>
                                 <input type="password" name="passVerify" class="form-control" id="inputPassword2"
                                     placeholder="Password">
@@ -130,7 +121,9 @@
                             </button>
                         </form>
                     </div>
+
                     @empty
+
                     <h3 class="text-center text-green">No Post</h3>
                     <img src="{{ asset('img/empty.png') }}" width="100%" alt="empty image">
                     @endforelse
@@ -148,8 +141,8 @@
 
 @section('modal')
 
-@include('utils.modal.edit')
-@include('utils.modal.delete')
+@include('utils.modal.edit', ['post' => session('getPost')])
+@include('utils.modal.delete', ['post' => session('getPost')])
 
 @endsection
 
@@ -175,12 +168,6 @@
                 if (log) alert(log);
             }
         });
-    });
-
-    // Modal
-    $(document).ready(function(){
-        $("#editModal").modal('show');
-        $("#deleteModal").modal('show');
     });
 </script>
 @endsection

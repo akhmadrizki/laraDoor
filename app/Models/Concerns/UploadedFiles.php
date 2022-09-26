@@ -119,6 +119,11 @@ trait UploadedFiles
         return !blank($this->getRawOriginal($this->fileColumn()));
     }
 
+    public function getPreviousFilePath(): string
+    {
+        return $this->filePath() . '/' . $this->getRawOriginal($this->fileColumn());
+    }
+
     /**
      * delete file with job after DB:commit operation
      *
@@ -130,7 +135,10 @@ trait UploadedFiles
             return;
         }
 
-        DeletedFile::dispatch($this)->afterCommit();
+        DeletedFile::dispatch(
+            $this->getPreviousFilePath(),
+            $this->getStorageName()
+        )->afterCommit();
     }
 
     /**
