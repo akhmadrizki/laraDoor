@@ -22,4 +22,4 @@ Route::redirect('/', '/post');
 
 Route::resource('/post', PostController::class);
 
-Route::post('/password-validation/{post}', [PostController::class, 'passValidation'])->name('pass.validate');
+Route::post('/password-validation/{post}/{method}', [PostController::class, 'passValidation'])->name('pass.validate');

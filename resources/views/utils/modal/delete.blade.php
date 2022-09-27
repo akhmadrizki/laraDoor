@@ -28,10 +28,10 @@
 </div>
 @endif
 
-@section('js')
+@push('js')
 <script>
     $(document).ready(function(){
         $("#deleteModal").modal('show');
     });
 </script>
-@endsection
+@endpush

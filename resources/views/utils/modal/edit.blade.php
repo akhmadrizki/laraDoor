@@ -1,5 +1,5 @@
 @if (session('method') === 'update')
-{{-- errors nya taro di old --}}
+
 <div class="modal fade" id="editModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
     aria-hidden="true">
     <div class="modal-dialog">
@@ -13,7 +13,7 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
-                    <input type="hidden" name="secrect" value="{{ $post->secrect }}">
+                    <input type="hidden" name="secret" value="{{ old('secret', $post->secret) }}">
                     <div class="form-group">
                         <label>Name</label>
                         <input type="text" name="name" class="form-control" value="{{ old('name', $post->name) }}">
@@ -44,7 +44,7 @@
                     <div class="form-group row">
                         @if ($post->hasFile())
                         <div class="col-md-4">
-                            <img class="img-responsive" alt="image" src="{{ asset('storage/img/'.$post->image) }}">
+                            <img class="img-responsive" alt="image" src="{{ $post->getImageAsset() }}">
                         </div>
                         @endif
                         <div class="col-md-8 pl-0">
@@ -85,10 +85,10 @@
 </div>
 @endif
 
-@section('js')
+@push('js')
 <script>
     $(document).ready(function(){
         $("#editModal").modal('show');
     });
 </script>
-@endsection
+@endpush

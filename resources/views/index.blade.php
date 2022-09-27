@@ -18,7 +18,7 @@
                         <div class="form-group">
                             <label>Name</label>
                             <input type="text" name="name" class="form-control"
-                                value="{{ $errors->storePost->hasAny($fieldData) ? old('name') : '' }}">
+                                value="{{ $errors->storePost->isNotEmpty() ? old('name') : '' }}">
                             @error('name', 'storePost')
                             <span class="invalid-feedback text-danger" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -29,7 +29,7 @@
                         <div class="form-group">
                             <label>Title</label>
                             <input type="text" name="title" class="form-control"
-                                value="{{ $errors->storePost->hasAny($fieldData) ? old('title') : '' }}">
+                                value="{{ $errors->storePost->isNotEmpty() ? old('title') : '' }}">
                             @error('title', 'storePost')
                             <span class="invalid-feedback text-danger" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -40,7 +40,7 @@
                         <div class="form-group">
                             <label>Body</label>
                             <textarea rows="5" name="body"
-                                class="form-control">{{ $errors->storePost->hasAny($fieldData) ? old('body') : '' }}</textarea>
+                                class="form-control">{{ $errors->storePost->isNotEmpty() ? old('body') : '' }}</textarea>
                             @error('body', 'storePost')
                             <span class="invalid-feedback text-danger" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -106,19 +106,24 @@
                         </div>
                         @endif
 
-                        <form class="form-inline mt-50" action="{{ route('pass.validate', $post->id) }}" method="POST">
+                        <form class="form-inline mt-50" method="POST">
                             @csrf
                             <div class="form-group mx-sm-3 mb-2">
                                 <label for="inputPassword2" class="sr-only">Password</label>
                                 <input type="password" name="passVerify" class="form-control" id="inputPassword2"
                                     placeholder="Password">
                             </div>
-                            <button type="submit" name="editBtn" class="btn btn-default mb-2"><i
-                                    class="fa fa-pencil p-3"></i></button>
 
-                            <button type="submit" name="deleteBtn" class="btn btn-danger">
+                            <button type="submit" name="editBtn"
+                                formaction="{{ route('pass.validate', ['post' => $post->id, 'method' => 'update']) }}"
+                                class="btn btn-default mb-2"><i class="fa fa-pencil p-3"></i></button>
+
+                            <button type="submit" name="deleteBtn"
+                                formaction="{{ route('pass.validate', ['post' => $post->id, 'method' => 'delete']) }}"
+                                class="btn btn-danger">
                                 <i class="fa fa-trash p-3"></i>
                             </button>
+
                         </form>
                     </div>
 
@@ -144,30 +149,4 @@
 @include('utils.modal.edit', ['post' => session('getPost')])
 @include('utils.modal.delete', ['post' => session('getPost')])
 
-@endsection
-
-@section('js')
-<script>
-    // Input type file
-    $(document).on('change', '.btn-file :file', function() {
-        var input = $(this),
-        numFiles  = input.get(0).files ? input.get(0).files.length : 1,
-        label     = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-
-        input.trigger('fileselect', [numFiles, label]);
-    });
-    
-    $(document).ready(function() {
-        $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
-            var input = $(this).parents('.input-group').find(':text'),
-            log = numFiles > 1 ? numFiles + ' files selected' : label;
-        
-            if (input.length) {
-                input.val(log);
-            } else {
-                if (log) alert(log);
-            }
-        });
-    });
-</script>
 @endsection

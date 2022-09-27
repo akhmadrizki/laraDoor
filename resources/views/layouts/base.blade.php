@@ -26,7 +26,8 @@
     <!-- Javascript -->
     <script type="text/javascript" src="{{ asset('js/jquery.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
-    @yield('js')
+    @vite('resources/js/app.js')
+    @stack('js')
 </body>
 
 </html>

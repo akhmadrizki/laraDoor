@@ -8,10 +8,8 @@ use App\Http\Requests\PostUpdateRequest;
 use App\Models\Post;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Hash;
 
 class PostController extends Controller
 {
@@ -24,9 +22,7 @@ class PostController extends Controller
     {
         $posts     = Post::latest()->paginate(2);
 
-        $fieldData = ['name', 'title', 'body', 'image', 'password'];
-
-        return view('index', compact('posts', 'fieldData'));
+        return view('index', compact('posts'));
     }
 
     /**
@@ -62,11 +58,11 @@ class PostController extends Controller
                 $message = $error->getMessage();
             }
 
-            // $error->getMessage()
             return redirect()->route('post.index')->with('message', $message);
         }
 
         flash('Data berhasil ditambahkan')->success();
+
         return redirect()->route('post.index');
     }
 
@@ -96,7 +92,7 @@ class PostController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
     public function update(PostUpdateRequest $request, Post $post)
@@ -105,7 +101,7 @@ class PostController extends Controller
 
         try {
 
-            if ($this->handleUpdateValidate($request->secrect) != $post) {
+            if (!$post->hasValidSecret($request->input('secret'))) {
                 throw new \Exception;
             }
 
@@ -120,27 +116,20 @@ class PostController extends Controller
             DB::commit();
         } catch (Exception $error) {
             DB::rollBack();
-            // throw $error;
-            // $error->getMessage()
+
             flash('Gagal update')->error();
             return redirect()->route('post.index');
         }
 
         flash('Data berhasil diupdate')->success();
+
         return redirect()->back();
-    }
-
-    public function handleUpdateValidate($request)
-    {
-        $getData = Crypt::decryptString($request);
-
-        return $getData;
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, Post $post)
@@ -148,7 +137,8 @@ class PostController extends Controller
         DB::beginTransaction();
 
         try {
-            if ($this->handleUpdateValidate($request->secrect) != $post->id) {
+
+            if (!$post->hasValidSecret($request->input('secret'))) {
                 throw new \Exception;
             }
 
@@ -159,41 +149,35 @@ class PostController extends Controller
             DB::rollBack();
 
             flash('Gagal delete')->error();
+
             return redirect()->route('post.index');
         }
 
         flash('Data berhasil dihapus')->success();
+
         return redirect()->back();
     }
 
-    public function passValidation(Request $request, Post $post)
+    public function passValidation(Request $request, Post $post, string $method)
     {
-        $post->secrect = Crypt::encryptString($post->id);
+        // Validate only method update dan delete
+        if (!in_array($method, ['update', 'delete'])) {
+            flash("Sorry the method not valid")->error();
 
-        $update = Gate::inspect('update', [$post, $request]);
-        $delete = Gate::inspect('delete', [$post, $request]);
-
-        if ($request->has('editBtn')) {
-
-            if ($update->denied()) {
-                flash($update->message())->error();
-                return redirect()->back();
-            }
-
-            return redirect()->back()->with([
-                'getPost' => $post,
-                'method'  => 'update',
-            ]);
+            return redirect()->back();
         }
 
-        if ($delete->allowed()) {
-            return redirect()->back()->with([
-                'getPost' => $post,
-                'method'  => 'delete',
-            ]);
+        $update = Gate::inspect($method, [$post, $request->passVerify]);
+
+        if ($update->denied()) {
+            flash($update->message())->error();
+
+            return redirect()->back();
         }
 
-        flash($delete->message())->error();
-        return redirect()->back();
+        return redirect()->back()->with([
+            'getPost' => $post,
+            'method'  => $method,
+        ]);
     }
 }

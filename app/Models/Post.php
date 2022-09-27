@@ -55,4 +55,26 @@ class Post extends Model
             }
         );
     }
+
+    public function secret(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => encrypt($this->id)
+        );
+    }
+
+    public function hasValidSecret(string $secret): bool
+    {
+        return $this->id == decrypt($secret);
+    }
+
+    public function hasPassword(): bool
+    {
+        return !blank($this->password);
+    }
+
+    public function isValidPassword($value, $hashedValue): bool
+    {
+        return Hash::check($value, $hashedValue);
+    }
 }

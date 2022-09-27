@@ -54,17 +54,14 @@ class PostPolicy
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(?User $user, Post $post, Request $request)
+    public function update(?User $user, Post $post, ?string $password)
     {
-        $getPassword = !blank($post->password);
-        $wrongPassword = Hash::check($request->passVerify, $post->password);
-
-        if ($getPassword && !$wrongPassword) {
-            return Response::deny("The passwords you entered do not match. Please try again. 😢");
+        if (!$post->hasPassword()) {
+            return Response::deny("This message can’t edit, because this message has not been set password. 😜");
         }
 
-        if (!$getPassword) {
-            return Response::deny("This message can’t edit, because this message has not been set password. 😜");
+        if (!$post->isValidPassword($password, $post->password)) {
+            return Response::deny("The passwords you entered do not match. Please try again. 😢");
         }
 
         return Response::allow();
@@ -77,17 +74,14 @@ class PostPolicy
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(?User $user, Post $post, Request $request)
+    public function delete(?User $user, Post $post, ?string $password)
     {
-        $getPassword = !blank($post->password);
-        $wrongPassword = Hash::check($request->passVerify, $post->password);
-
-        if ($getPassword && !$wrongPassword) {
-            return Response::deny("The passwords you entered do not match. Please try again. 😢");
+        if (!$post->hasPassword()) {
+            return Response::deny("This message can’t delete, because this message has not been set password. 😜");
         }
 
-        if (!$getPassword) {
-            return Response::deny("This message can’t delete, because this message has not been set password. 😜");
+        if (!$post->isValidPassword($password, $post->password)) {
+            return Response::deny("The passwords you entered do not match. Please try again. 😢");
         }
 
         return Response::allow();
