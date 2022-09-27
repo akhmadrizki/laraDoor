@@ -23,3 +23,7 @@ Route::redirect('/', '/post');
 Route::resource('/post', PostController::class);
 
 Route::post('/password-validation/{post}/{method}', [PostController::class, 'passValidation'])->name('pass.validate');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
