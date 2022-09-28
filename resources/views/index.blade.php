@@ -17,6 +17,14 @@
                         @csrf
                         <div class="form-group">
                             <label>Name</label>
+
+                            @auth
+                            <input type="text" name="name" disabled class="form-control"
+                                value="{{ Auth::user()->name }}">
+                            @endauth
+
+                            @guest
+
                             <input type="text" name="name" class="form-control"
                                 value="{{ $errors->storePost->isNotEmpty() ? old('name') : '' }}">
                             @error('name', 'storePost')
@@ -24,6 +32,8 @@
                                 <strong>{{ $message }}</strong>
                             </span>
                             @enderror
+
+                            @endguest
                         </div>
 
                         <div class="form-group">
@@ -66,6 +76,7 @@
                             @enderror
                         </div>
 
+                        @guest
                         <div class="form-group">
                             <label>Password</label>
                             <input type="password" name="password" class="form-control @error('password', 'storePassword') is-invalid
@@ -76,6 +87,7 @@
                             </span>
                             @enderror
                         </div>
+                        @endguest
 
                         <div class="text-center mt-30 mb-30">
                             <button type="submit" class="btn btn-primary">Submit</button>
@@ -108,11 +120,14 @@
 
                         <form class="form-inline mt-50" method="POST">
                             @csrf
+
+                            @guest
                             <div class="form-group mx-sm-3 mb-2">
                                 <label for="inputPassword2" class="sr-only">Password</label>
                                 <input type="password" name="passVerify" class="form-control" id="inputPassword2"
                                     placeholder="Password">
                             </div>
+                            @endguest
 
                             <button type="submit" name="editBtn"
                                 formaction="{{ route('pass.validate', ['post' => $post->id, 'method' => 'update']) }}"

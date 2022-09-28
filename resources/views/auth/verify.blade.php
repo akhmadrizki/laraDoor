@@ -1,28 +1,26 @@
 @extends('layouts.app')
 
+@section('title') Register Success @endsection
+
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Verify Your Email Address') }}</div>
-
-                <div class="card-body">
-                    @if (session('resent'))
-                        <div class="alert alert-success" role="alert">
-                            {{ __('A fresh verification link has been sent to your email address.') }}
-                        </div>
-                    @endif
-
-                    {{ __('Before proceeding, please check your email for a verification link.') }}
-                    {{ __('If you did not receive the email') }},
-                    <form class="d-inline" method="POST" action="{{ route('verification.resend') }}">
-                        @csrf
-                        <button type="submit" class="btn btn-link p-0 m-0 align-baseline">{{ __('click here to request another') }}</button>.
-                    </form>
-                </div>
-            </div>
-        </div>
+<div class="login-box-head text-center">
+    <h1>Successfully Registered</h1>
+</div>
+<div class="login-box-body text-center">
+    <p>
+        Thank you for your membership register.<br />
+        We send confirmation e-mail to you. Please complete the registration by clicking the confirmation URL.<br />
+        If you did not receive the email
+    <form class="d-inline" method="POST" action="{{ route('verification.resend') }}">
+        @csrf
+        <button type="submit" class="btn btn-link p-0 m-0 align-baseline">click here to request
+            another</button>.
+    </form>
+    </p>
+</div>
+<div class="login-box-footer">
+    <div class="text-center">
+        <a href="{{ route('post.index') }}" class="btn btn-primary">Back to Home</a>
     </div>
 </div>
 @endsection

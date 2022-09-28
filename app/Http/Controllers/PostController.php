@@ -6,6 +6,7 @@ use App\Exceptions\UploadFileException;
 use App\Http\Requests\PostStoreRequest;
 use App\Http\Requests\PostUpdateRequest;
 use App\Models\Post;
+use Illuminate\Support\Facades\Auth;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -46,7 +47,16 @@ class PostController extends Controller
         DB::beginTransaction();
 
         try {
-            Post::create($request->safe(['name', 'title', 'body', 'password', 'image']));
+
+            // $cekVerif = Auth::user();
+            if (Auth::user()) {
+                if (blank(auth()->user()->email_verified_at)) {
+                    return redirect()->route('verification.notice');
+                }
+                Post::create($request->safe(['name', 'title', 'body', 'password', 'image']));
+            } else {
+                Post::create($request->safe(['name', 'title', 'body', 'password', 'image']));
+            }
 
             DB::commit();
         } catch (Exception $error) {

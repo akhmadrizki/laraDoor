@@ -7,19 +7,29 @@
     <h1 class="mb-5">Login</h1>
     <p class="text-lgray">Please login to continue...</p>
 </div>
-<div class="login-box-body">
-    <div class="form-group">
-        <input type="text" class="form-control" placeholder="Username">
-        <p class="mt-5 small text-danger">*this field can't be empty</p>
+
+<form action="{{ route('login') }}" method="POST">
+    @csrf
+    <div class="login-box-body">
+        <div class="form-group">
+            <input type="email" class="form-control @error('email') is-invalid @enderror" name="email"
+                value="{{ old('email') }}" placeholder="Email" autofocus>
+            @error('email')
+            <p class="mt-5 small text-danger">{{ $message }}</p>
+            @enderror
+        </div>
+        <div class="form-group">
+            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
+                placeholder="Password">
+            @error('password')
+            <p class="mt-5 small text-danger">{{ $message }}</p>
+            @enderror
+        </div>
     </div>
-    <div class="form-group">
-        <input type="password" class="form-control" placeholder="Password">
-        <p class="mt-5 small text-danger hide">*this field can't be empty</p>
+    <div class="login-box-footer">
+        <div class="text-right">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
     </div>
-</div>
-<div class="login-box-footer">
-    <div class="text-right">
-        <a href="index.php" class="btn btn-primary">Submit</a>
-    </div>
-</div>
+</form>
 @endsection
