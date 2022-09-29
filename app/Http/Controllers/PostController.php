@@ -47,13 +47,15 @@ class PostController extends Controller
         DB::beginTransaction();
 
         try {
-
-            // $cekVerif = Auth::user();
             if (Auth::user()) {
                 if (blank(auth()->user()->email_verified_at)) {
                     return redirect()->route('verification.notice');
                 }
-                Post::create($request->safe(['name', 'title', 'body', 'password', 'image']));
+
+                $post = new Post($request->safe(['name', 'title', 'body', 'password', 'image']));
+                $post->user_id = Auth::user()->id;
+
+                $post->save();
             } else {
                 Post::create($request->safe(['name', 'title', 'body', 'password', 'image']));
             }
@@ -68,7 +70,9 @@ class PostController extends Controller
                 $message = $error->getMessage();
             }
 
-            return redirect()->route('post.index')->with('message', $message);
+            flash($message)->error();
+
+            return redirect()->route('post.index');
         }
 
         flash('Data berhasil ditambahkan')->success();

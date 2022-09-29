@@ -16,7 +16,8 @@
                     <input type="hidden" name="secret" value="{{ old('secret', $post->secret) }}">
                     <div class="form-group">
                         <label>Name</label>
-                        <input type="text" name="name" class="form-control" value="{{ old('name', $post->name) }}">
+                        <input type="text" name="name" disabled class="form-control"
+                            value="{{ is_null($post->name) ? $post->user->name : $post->name }}">
                         @error('name', 'updatePost')
                         <span class="invalid-feedback text-danger" role="alert">
                             <strong>{{ $message }}</strong>

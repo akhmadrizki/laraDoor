@@ -109,7 +109,7 @@
                                 </p>
                             </div>
                         </div>
-                        <h4 class="mb-20">{{ $post->name }}</h4>
+                        <h4 class="mb-20">{{ is_null($post->name) ? $post->user->name : $post->name }}</h4>
                         <p class="pre-line">{{ ($post->body) }}</p>
 
                         @if (!is_null($post->getImageAsset()))
@@ -121,13 +121,27 @@
                         <form class="form-inline mt-50" method="POST">
                             @csrf
 
+                            @auth
+                            @if (Auth::user()->id == $post->user_id)
+                            <button type="submit" name="editBtn"
+                                formaction="{{ route('pass.validate', ['post' => $post->id, 'method' => 'update']) }}"
+                                class="btn btn-default mb-2"><i class="fa fa-pencil p-3"></i></button>
+
+                            <button type="submit" name="deleteBtn"
+                                formaction="{{ route('pass.validate', ['post' => $post->id, 'method' => 'delete']) }}"
+                                class="btn btn-danger">
+                                <i class="fa fa-trash p-3"></i>
+                            </button>
+                            @endif
+                            @endauth
+
                             @guest
+                            @if ($post->user_id == null)
                             <div class="form-group mx-sm-3 mb-2">
                                 <label for="inputPassword2" class="sr-only">Password</label>
                                 <input type="password" name="passVerify" class="form-control" id="inputPassword2"
                                     placeholder="Password">
                             </div>
-                            @endguest
 
                             <button type="submit" name="editBtn"
                                 formaction="{{ route('pass.validate', ['post' => $post->id, 'method' => 'update']) }}"
@@ -138,6 +152,10 @@
                                 class="btn btn-danger">
                                 <i class="fa fa-trash p-3"></i>
                             </button>
+                            @endif
+
+
+                            @endguest
 
                         </form>
                     </div>

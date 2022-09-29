@@ -5,9 +5,7 @@ namespace App\Policies;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Http\Request;
 
 class PostPolicy
 {
@@ -56,11 +54,19 @@ class PostPolicy
      */
     public function update(?User $user, Post $post, ?string $password)
     {
-        if (!$post->hasPassword()) {
-            return Response::deny("This message can’t edit, because this message has not been set password. 😜");
+        if (optional($user)->id !== $post->user_id) {
+            return Response::deny("This post it's not yours 😂");
         }
 
-        if (!$post->isValidPassword($password, $post->password)) {
+        if (!$post->isTheOwner(optional($user))) {
+            return Response::deny("This post can't be updated because it's not yours 😂");
+        }
+
+        if (!$post->hasPassword() && $post->user_id == null) {
+            return Response::deny("This post can’t edit, because this post has not been set password. 😜");
+        }
+
+        if (!$post->isValidPassword($password, $post->password) && $post->user_id == null) {
             return Response::deny("The passwords you entered do not match. Please try again. 😢");
         }
 
@@ -76,11 +82,19 @@ class PostPolicy
      */
     public function delete(?User $user, Post $post, ?string $password)
     {
-        if (!$post->hasPassword()) {
-            return Response::deny("This message can’t delete, because this message has not been set password. 😜");
+        if (optional($user)->id !== $post->user_id) {
+            return Response::deny("This post it's not yours 😂");
         }
 
-        if (!$post->isValidPassword($password, $post->password)) {
+        if (!$post->isTheOwner(optional($user))) {
+            return Response::deny("This post can't be deleted because it's not yours 😂");
+        }
+
+        if (!$post->hasPassword() && $post->user_id == null) {
+            return Response::deny("This post can’t delete, because this post has not been set password. 😜");
+        }
+
+        if (!$post->isValidPassword($password, $post->password) && $post->user_id == null) {
             return Response::deny("The passwords you entered do not match. Please try again. 😢");
         }
 

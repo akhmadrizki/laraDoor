@@ -20,6 +20,7 @@ return new class extends Migration
             $table->longText('body');
             $table->string('password')->nullable();
             $table->string('image')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained('users');
             $table->timestamps();
         });
     }

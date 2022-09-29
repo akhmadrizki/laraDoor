@@ -18,6 +18,7 @@ class Post extends Model
         'body',
         'image',
         'password',
+        'user_id',
     ];
 
     protected $hidden = [
@@ -43,6 +44,10 @@ class Post extends Model
     public $deleteImage = false;
 
     // Relasi
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     // Accesor and Mutator
     public function password(): Attribute
@@ -76,5 +81,10 @@ class Post extends Model
     public function isValidPassword($value, $hashedValue): bool
     {
         return Hash::check($value, $hashedValue);
+    }
+
+    public function isTheOwner($user)
+    {
+        return $this->user_id === $user->id;
     }
 }

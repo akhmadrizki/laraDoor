@@ -20,7 +20,7 @@
         </div>
 
         <div class="form-group">
-            <input type="text" name="email" class="form-control @error('email') is-invalid @enderror"
+            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
                 placeholder="E-mail" value="{{ old('email') }}">
             @error('email')
             <p class="mt-5 small text-danger">{{ $message }}</p>
