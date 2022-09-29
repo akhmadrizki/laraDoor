@@ -109,7 +109,15 @@
                                 </p>
                             </div>
                         </div>
-                        <h4 class="mb-20">{{ is_null($post->name) ? $post->user->name : $post->name }}</h4>
+                        <h4 class="mb-20">
+
+                            @if (!is_null($post->name) || !is_null($post->user_id))
+                            {{ is_null($post->name) ? $post->user->name : $post->name }} -
+                            {{ $post->id }}
+                            @else
+                            <small class="text-primary"><i>anonymous</i></small>
+                            @endif
+                        </h4>
                         <p class="pre-line">{{ ($post->body) }}</p>
 
                         @if (!is_null($post->getImageAsset()))
