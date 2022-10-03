@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,14 +22,12 @@ Route::get('/', function () {
 
 Route::redirect('/', '/post');
 
-Route::get('/yoga', function () {
-    return "yoga gans";
-})->middleware(['auth', 'verified']);
-
-Route::resource('/post', PostController::class);
+Route::resource('/post', PostController::class)->middleware('is.verified');
 
 Route::post('/password-validation/{post}/{method}', [PostController::class, 'passValidation'])->name('pass.validate');
 
-Auth::routes(['verify' => true]);
+Auth::routes(['verify' => true, 'reset' => false]);
+
+Route::get('/verify/success', [VerificationController::class, 'verified'])->name('verify.success');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

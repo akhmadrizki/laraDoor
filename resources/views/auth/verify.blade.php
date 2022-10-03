@@ -4,6 +4,14 @@
 
 @section('content')
 <div class="login-box-head text-center">
+    @include('flash::message')
+
+    @if (session('resent'))
+    <div class="alert alert-success" role="alert">
+        {{ __('A fresh 📧 verification link has been sent to your email address.') }}
+    </div>
+    @endif
+
     <h1>Successfully Registered</h1>
 </div>
 <div class="login-box-body text-center">

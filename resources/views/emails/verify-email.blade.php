@@ -3,7 +3,7 @@
 
 Please click the button below to verify your email address.
 
-@component('mail::button', ['url' => $verifyUrl])
+@component('mail::button', ['url' => $url])
 Verify Email Address
 @endcomponent
 
@@ -15,6 +15,6 @@ Timedoor
 ***
 
 If you're having trouble clicking the "Verify Email Address" button, copy and paste the URL below into your web
-browser: [{{ $verifyUrl }}]({{ $verifyUrl }})
+browser: [{{ $url }}]({{ $url }})
 
 @endcomponent

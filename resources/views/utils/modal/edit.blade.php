@@ -13,11 +13,11 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
-                    <input type="hidden" name="secret" value="{{ old('secret', $post->secret) }}">
+                    <input type="hidden" name="secret" value="{{ old('secret', session('secret')) }}">
                     <div class="form-group">
                         <label>Name</label>
-                        <input type="text" name="name" disabled class="form-control"
-                            value="{{ is_null($post->name) ? $post->user->name : $post->name }}">
+                        <input type="text" name="name" @if($post->user_id) disabled @endif class="form-control"
+                        value="{{ $post->name }}">
                         @error('name', 'updatePost')
                         <span class="invalid-feedback text-danger" role="alert">
                             <strong>{{ $message }}</strong>

@@ -48,25 +48,35 @@ class PostPolicy
     /**
      * Determine whether the user can update the model.
      *
-     * @param  \App\Models\User  $user
+     * @param  \App\Models\User|null  $user
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(?User $user, Post $post, ?string $password)
+    public function update(?User $user, Post $post, ?string $password, int $id)
     {
-        if (optional($user)->id !== $post->user_id) {
+        // Check if there is a user
+        if ($user) {
+            return $user->id === $post->user_id ? Response::allow() : Response::deny("This post it's not yours 😂");
+        }
+
+        // Check if the post belongs to another user
+        if ($post->user_id) {
             return Response::deny("This post it's not yours 😂");
         }
 
-        if (!$post->isTheOwner(optional($user))) {
-            return Response::deny("This post can't be updated because it's not yours 😂");
+        /*
+          In the logic below it's confirmed that the user is not 
+          logged in and the post does not belong to another user
+        */
+        if ($post->id !== $id) {
+            return Response::deny("😜");
         }
 
-        if (!$post->hasPassword() && $post->user_id == null) {
+        if (!$post->hasPassword()) {
             return Response::deny("This post can’t edit, because this post has not been set password. 😜");
         }
 
-        if (!$post->isValidPassword($password, $post->password) && $post->user_id == null) {
+        if (!$post->isValidPassword($password, $post->password)) {
             return Response::deny("The passwords you entered do not match. Please try again. 😢");
         }
 
@@ -80,21 +90,31 @@ class PostPolicy
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(?User $user, Post $post, ?string $password)
+    public function delete(?User $user, Post $post, ?string $password, int $id)
     {
-        if (optional($user)->id !== $post->user_id) {
+        // Check if there is a user
+        if ($user) {
+            return $user->id === $post->user_id ? Response::allow() : Response::deny("This post it's not yours 😂");
+        }
+
+        // Check if the post belongs to another user
+        if ($post->user_id) {
             return Response::deny("This post it's not yours 😂");
         }
 
-        if (!$post->isTheOwner(optional($user))) {
-            return Response::deny("This post can't be deleted because it's not yours 😂");
+        /*
+          In the logic below it's confirmed that the user is not 
+          logged in and the post does not belong to another user
+        */
+        if ($post->id !== $id) {
+            return Response::deny("😜");
         }
 
-        if (!$post->hasPassword() && $post->user_id == null) {
+        if (!$post->hasPassword()) {
             return Response::deny("This post can’t delete, because this post has not been set password. 😜");
         }
 
-        if (!$post->isValidPassword($password, $post->password) && $post->user_id == null) {
+        if (!$post->isValidPassword($password, $post->password)) {
             return Response::deny("The passwords you entered do not match. Please try again. 😢");
         }
 

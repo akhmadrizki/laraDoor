@@ -15,7 +15,7 @@
             </div>
             <div class="modal-footer d-inline">
                 <form action="{{ route('post.destroy', $post->id) }}" method="POST">
-                    <input type="hidden" name="secrect" value="{{ $post->secrect }}">
+                    <input type="hidden" name="secret" value="{{ session('secret') }}">
 
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     @method('DELETE')

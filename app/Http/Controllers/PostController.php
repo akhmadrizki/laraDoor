@@ -8,6 +8,7 @@ use App\Http\Requests\PostUpdateRequest;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -47,24 +48,24 @@ class PostController extends Controller
         DB::beginTransaction();
 
         try {
+            $post = new Post($request->safe(['name', 'title', 'body', 'password', 'image']));
+
             if (Auth::user()) {
                 if (blank(auth()->user()->email_verified_at)) {
                     return redirect()->route('verification.notice');
                 }
 
-                $post = new Post($request->safe(['name', 'title', 'body', 'password', 'image']));
                 $post->user_id = Auth::user()->id;
-
-                $post->save();
-            } else {
-                Post::create($request->safe(['name', 'title', 'body', 'password', 'image']));
+                $post->name = Auth::user()->name;
             }
+
+            $post->save();
 
             DB::commit();
         } catch (Exception $error) {
             DB::rollBack();
 
-            $message = "Data gagal ditambahkan 😭";
+            $message = "Data failed to create 😭";
 
             if ($error instanceof UploadFileException) {
                 $message = $error->getMessage();
@@ -75,7 +76,7 @@ class PostController extends Controller
             return redirect()->route('post.index');
         }
 
-        flash('Data berhasil ditambahkan')->success();
+        flash('Data successfully create')->success();
 
         return redirect()->route('post.index');
     }
@@ -114,10 +115,10 @@ class PostController extends Controller
         DB::beginTransaction();
 
         try {
+            $decryptKey = decrypt($request->input('secret'));
+            $explodeKey = explode('|', $decryptKey, 2);
 
-            if (!$post->hasValidSecret($request->input('secret'))) {
-                throw new \Exception;
-            }
+            Gate::authorize('update', [$post, $explodeKey[1], $explodeKey[0]]);
 
             $validated = $request->safe(['name', 'title', 'body', 'deleteImage', 'image']);
 
@@ -131,7 +132,14 @@ class PostController extends Controller
         } catch (Exception $error) {
             DB::rollBack();
 
-            flash('Gagal update')->error();
+            $message = 'Update failed';
+
+            if ($error instanceof AuthorizationException) {
+                $message = $error->getMessage();
+            }
+
+            flash($message)->error();
+
             return redirect()->route('post.index');
         }
 
@@ -151,10 +159,10 @@ class PostController extends Controller
         DB::beginTransaction();
 
         try {
+            $decryptKey = decrypt($request->input('secret'));
+            $explodeKey = explode('|', $decryptKey, 2);
 
-            if (!$post->hasValidSecret($request->input('secret'))) {
-                throw new \Exception;
-            }
+            Gate::authorize('delete', [$post, $explodeKey[1], $explodeKey[0]]);
 
             $post->delete();
 
@@ -162,7 +170,13 @@ class PostController extends Controller
         } catch (Exception $error) {
             DB::rollBack();
 
-            flash('Gagal delete')->error();
+            $message = 'Delete failed';
+
+            if ($error instanceof AuthorizationException) {
+                $message = $error->getMessage();
+            }
+
+            flash($message)->error();
 
             return redirect()->route('post.index');
         }
@@ -181,7 +195,7 @@ class PostController extends Controller
             return redirect()->back();
         }
 
-        $update = Gate::inspect($method, [$post, $request->passVerify]);
+        $update = Gate::inspect($method, [$post, $request->passVerify, $post->id]);
 
         if ($update->denied()) {
             flash($update->message())->error();
@@ -192,6 +206,7 @@ class PostController extends Controller
         return redirect()->back()->with([
             'getPost' => $post,
             'method'  => $method,
+            'secret'  => $post->secret($request->passVerify),
         ]);
     }
 }

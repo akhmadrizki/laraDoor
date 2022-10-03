@@ -110,13 +110,8 @@
                             </div>
                         </div>
                         <h4 class="mb-20">
-
-                            @if (!is_null($post->name) || !is_null($post->user_id))
-                            {{ is_null($post->name) ? $post->user->name : $post->name }} -
-                            {{ $post->id }}
-                            @else
-                            <small class="text-primary"><i>anonymous</i></small>
-                            @endif
+                            {{ blank($post->name) ? 'no name' : $post->name }}
+                            <span class="text-id">{{ $post->user_id ? '-' .$post->user_id : '' }}</span>
                         </h4>
                         <p class="pre-line">{{ ($post->body) }}</p>
 
@@ -130,7 +125,7 @@
                             @csrf
 
                             @auth
-                            @if (Auth::user()->id == $post->user_id)
+                            @if (Auth::user()->id === $post->user_id)
                             <button type="submit" name="editBtn"
                                 formaction="{{ route('pass.validate', ['post' => $post->id, 'method' => 'update']) }}"
                                 class="btn btn-default mb-2"><i class="fa fa-pencil p-3"></i></button>
@@ -144,7 +139,7 @@
                             @endauth
 
                             @guest
-                            @if ($post->user_id == null)
+                            @if ($post->user_id === null)
                             <div class="form-group mx-sm-3 mb-2">
                                 <label for="inputPassword2" class="sr-only">Password</label>
                                 <input type="password" name="passVerify" class="form-control" id="inputPassword2"

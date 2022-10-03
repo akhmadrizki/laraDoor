@@ -61,11 +61,13 @@ class Post extends Model
         );
     }
 
-    public function secret(): Attribute
+    public function secret($password)
     {
-        return Attribute::make(
-            get: fn () => encrypt($this->id)
-        );
+        $redem = $this->id . '|' . $password;
+        return encrypt($redem);
+        // return Attribute::make(
+        //     get: fn () => encrypt($redem)
+        // );
     }
 
     public function hasValidSecret(string $secret): bool
@@ -83,7 +85,7 @@ class Post extends Model
         return Hash::check($value, $hashedValue);
     }
 
-    public function isTheOwner($user)
+    public function isTheOwner(?User $user)
     {
         return $this->user_id === $user->id;
     }
