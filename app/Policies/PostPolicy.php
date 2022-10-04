@@ -52,7 +52,7 @@ class PostPolicy
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(?User $user, Post $post, ?string $password, int $id)
+    public function update(?User $user, Post $post, ?string $secret)
     {
         // Check if there is a user
         if ($user) {
@@ -68,15 +68,12 @@ class PostPolicy
           In the logic below it's confirmed that the user is not 
           logged in and the post does not belong to another user
         */
-        if ($post->id !== $id) {
-            return Response::deny("😜");
-        }
 
         if (!$post->hasPassword()) {
-            return Response::deny("This post can’t edit, because this post has not been set password. 😜");
+            return Response::deny("This post can't edit, because this post has not been set password. 😜");
         }
 
-        if (!$post->isValidPassword($password, $post->password)) {
+        if (!$post->hasValidSecret($secret)) {
             return Response::deny("The passwords you entered do not match. Please try again. 😢");
         }
 
@@ -90,7 +87,7 @@ class PostPolicy
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(?User $user, Post $post, ?string $password, int $id)
+    public function delete(?User $user, Post $post, ?string $secret)
     {
         // Check if there is a user
         if ($user) {
@@ -106,15 +103,12 @@ class PostPolicy
           In the logic below it's confirmed that the user is not 
           logged in and the post does not belong to another user
         */
-        if ($post->id !== $id) {
-            return Response::deny("😜");
-        }
 
         if (!$post->hasPassword()) {
-            return Response::deny("This post can’t delete, because this post has not been set password. 😜");
+            return Response::deny("This post can't delete, because this post has not been set password. 😜");
         }
 
-        if (!$post->isValidPassword($password, $post->password)) {
+        if (!$post->hasValidSecret($secret)) {
             return Response::deny("The passwords you entered do not match. Please try again. 😢");
         }
 

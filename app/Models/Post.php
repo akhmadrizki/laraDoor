@@ -61,18 +61,23 @@ class Post extends Model
         );
     }
 
-    public function secret($password)
+    public function secret(?string $password): string
     {
         $redem = $this->id . '|' . $password;
+
         return encrypt($redem);
-        // return Attribute::make(
-        //     get: fn () => encrypt($redem)
-        // );
     }
 
     public function hasValidSecret(string $secret): bool
     {
-        return $this->id == decrypt($secret);
+        $decryptText = decrypt($secret);
+        $explodeText = explode('|', $decryptText, 2);
+
+        if ($explodeText[0] != $this->id) {
+            return false;
+        }
+
+        return $this->isValidPassword($explodeText[1] ?? '');
     }
 
     public function hasPassword(): bool
@@ -80,9 +85,9 @@ class Post extends Model
         return !blank($this->password);
     }
 
-    public function isValidPassword($value, $hashedValue): bool
+    public function isValidPassword(string $value): bool
     {
-        return Hash::check($value, $hashedValue);
+        return Hash::check($value, $this->password);
     }
 
     public function isTheOwner(?User $user)

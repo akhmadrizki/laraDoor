@@ -10,7 +10,9 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <h2 class="font16 text-green mt-15"><b>Timedoor 30 Challenge Programmer</b></h2>
+                <a href="{{ route('post.index') }}">
+                    <h2 class="font16 text-green mt-15"><b>Timedoor 30 Challenge Programmer</b></h2>
+                </a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -18,11 +20,15 @@
                 <ul class="nav navbar-nav navbar-right">
                     @guest
                     @if (Route::has('login'))
-                    <li><a href="{{ route('login') }}">Login</a></li>
+                    <li class="{{ Request::route()->getName() == 'login' ? 'menu-active' : null }}">
+                        <a href="{{ route('login') }}">Login</a>
+                    </li>
                     @endif
 
                     @if (Route::has('register'))
-                    <li><a href="{{ route('register') }}">Register</a></li>
+                    <li class="{{ Request::route()->getName() == 'register' ? 'menu-active' : null }}">
+                        <a href="{{ route('register') }}">Register</a>
+                    </li>
                     @endif
 
                     @else

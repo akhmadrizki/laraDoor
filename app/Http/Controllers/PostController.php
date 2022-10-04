@@ -115,10 +115,7 @@ class PostController extends Controller
         DB::beginTransaction();
 
         try {
-            $decryptKey = decrypt($request->input('secret'));
-            $explodeKey = explode('|', $decryptKey, 2);
-
-            Gate::authorize('update', [$post, $explodeKey[1], $explodeKey[0]]);
+            Gate::authorize('delete', [$post, $request->input('secret')]);
 
             $validated = $request->safe(['name', 'title', 'body', 'deleteImage', 'image']);
 
@@ -159,10 +156,7 @@ class PostController extends Controller
         DB::beginTransaction();
 
         try {
-            $decryptKey = decrypt($request->input('secret'));
-            $explodeKey = explode('|', $decryptKey, 2);
-
-            Gate::authorize('delete', [$post, $explodeKey[1], $explodeKey[0]]);
+            Gate::authorize('delete', [$post, $request->input('secret')]);
 
             $post->delete();
 
@@ -190,15 +184,17 @@ class PostController extends Controller
     {
         // Validate only method update dan delete
         if (!in_array($method, ['update', 'delete'])) {
-            flash("Sorry the method not valid")->error();
+            flash("Sorry the method is not valid")->error();
 
             return redirect()->back();
         }
 
-        $update = Gate::inspect($method, [$post, $request->passVerify, $post->id]);
+        $secret = $post->secret($request->passVerify);
 
-        if ($update->denied()) {
-            flash($update->message())->error();
+        $gate = Gate::inspect($method, [$post, $secret]);
+
+        if ($gate->denied()) {
+            flash($gate->message())->error();
 
             return redirect()->back();
         }
@@ -206,7 +202,7 @@ class PostController extends Controller
         return redirect()->back()->with([
             'getPost' => $post,
             'method'  => $method,
-            'secret'  => $post->secret($request->passVerify),
+            'secret'  => $secret,
         ]);
     }
 }

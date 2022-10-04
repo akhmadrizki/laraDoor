@@ -25,6 +25,7 @@ class EmailsVerified
                 !$request->user()->hasVerifiedEmail())
         ) {
             flash('Sorry, your account has not been activated 🤯')->error();
+
             return $request->expectsJson()
                 ? abort(403, 'Your email address is not verified.')
                 : Redirect::guest(URL::route($redirectToRoute ?: 'verification.notice'));
