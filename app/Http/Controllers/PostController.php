@@ -115,7 +115,7 @@ class PostController extends Controller
         DB::beginTransaction();
 
         try {
-            Gate::authorize('delete', [$post, $request->input('secret')]);
+            Gate::authorize('update', [$post, $request->input('secret')]);
 
             $validated = $request->safe(['name', 'title', 'body', 'deleteImage', 'image']);
 
