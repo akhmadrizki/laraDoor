@@ -63,7 +63,8 @@ class Post extends Model
 
     public function secret(?string $password): string
     {
-        $redem = $this->id . '|' . $password;
+        // $redem = $this->id . '|' . $password;
+        $redem = "{$this->id}|{$password}";
 
         return encrypt($redem);
     }

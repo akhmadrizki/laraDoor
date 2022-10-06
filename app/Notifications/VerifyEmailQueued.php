@@ -55,7 +55,7 @@ class VerifyEmailQueued extends Notification implements ShouldQueue
             ]
         );
 
-        $address = env('MAIL_USERNAME');
+        $address = config('mail.from.address');
         $name    = 'Timedoor';
         $subject = 'Verify Email';
 

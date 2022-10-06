@@ -7,7 +7,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
 
-class EmailsVerified
+class GuestOrVerified
 {
     /**
      * Handle an incoming request.

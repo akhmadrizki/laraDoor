@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\VerifyPostCOntroller;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,12 +23,11 @@ Route::get('/', function () {
 
 Route::redirect('/', '/post');
 
-Route::resource('/post', PostController::class)->middleware('is.verified');
+Route::middleware(['guestOrVerified'])->group(function () {
+    Route::resource('/post', PostController::class);
+    Route::post('/post/{post}/verify/{method}', VerifyPostCOntroller::class)->name('post.verify-password');
+});
 
-Route::post('/password-validation/{post}/{method}', [PostController::class, 'passValidation'])->name('pass.validate');
-
-Auth::routes(['verify' => true, 'reset' => false]);
-
-Route::get('/verify/success', [VerificationController::class, 'verified'])->name('verify.success');
+Auth::routes(['verify' => true, 'reset' => false, 'confirm' => false]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

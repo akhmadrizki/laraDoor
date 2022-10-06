@@ -127,11 +127,11 @@
                             @auth
                             @if (Auth::user()->id === $post->user_id)
                             <button type="submit" name="editBtn"
-                                formaction="{{ route('pass.validate', ['post' => $post->id, 'method' => 'update']) }}"
+                                formaction="{{ route('post.verify-password', ['post' => $post->id, 'method' => 'update']) }}"
                                 class="btn btn-default mb-2"><i class="fa fa-pencil p-3"></i></button>
 
                             <button type="submit" name="deleteBtn"
-                                formaction="{{ route('pass.validate', ['post' => $post->id, 'method' => 'delete']) }}"
+                                formaction="{{ route('post.verify-password', ['post' => $post->id, 'method' => 'delete']) }}"
                                 class="btn btn-danger">
                                 <i class="fa fa-trash p-3"></i>
                             </button>
@@ -147,11 +147,11 @@
                             </div>
 
                             <button type="submit" name="editBtn"
-                                formaction="{{ route('pass.validate', ['post' => $post->id, 'method' => 'update']) }}"
+                                formaction="{{ route('post.verify-password', ['post' => $post->id, 'method' => 'update']) }}"
                                 class="btn btn-default mb-2"><i class="fa fa-pencil p-3"></i></button>
 
                             <button type="submit" name="deleteBtn"
-                                formaction="{{ route('pass.validate', ['post' => $post->id, 'method' => 'delete']) }}"
+                                formaction="{{ route('post.verify-password', ['post' => $post->id, 'method' => 'delete']) }}"
                                 class="btn btn-danger">
                                 <i class="fa fa-trash p-3"></i>
                             </button>

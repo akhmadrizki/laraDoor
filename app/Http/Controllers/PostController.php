@@ -51,10 +51,6 @@ class PostController extends Controller
             $post = new Post($request->safe(['name', 'title', 'body', 'password', 'image']));
 
             if (Auth::user()) {
-                if (blank(auth()->user()->email_verified_at)) {
-                    return redirect()->route('verification.notice');
-                }
-
                 $post->user_id = Auth::user()->id;
                 $post->name = Auth::user()->name;
             }
