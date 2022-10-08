@@ -4,13 +4,13 @@ namespace App\Models;
 
 use App\Models\Concerns\UploadedFiles;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 
 class Post extends Model
 {
-    use HasFactory, UploadedFiles;
+    use SoftDeletes, UploadedFiles;
 
     protected $fillable = [
         'name',
@@ -41,7 +41,7 @@ class Post extends Model
         return 'public';
     }
 
-    public $deleteImage = false;
+    // public $deleteImage = false;
 
     // Relasi
     public function user()

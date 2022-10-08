@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->string('image')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -21,20 +21,13 @@ trait UploadedFiles
     {
         static::saving(function (Model $model) {
 
-            // dd($model->deleteImage);
-            if ($model->deleteImage) {
-                if (!is_null($model->fileColumn())) {
-                    $model->deletePreviousFile();
-                }
-
-                $model->setAttribute($model->fileColumn(), null);
-
-                return;
-            }
-
             if ($model->isDirty($model->fileColumn())) {
 
                 $image = $model->getAttribute($model->fileColumn());
+
+                if (blank($image)) {
+                    $model->deletePreviousFile();
+                }
 
                 if ($image instanceof UploadedFile) {
                     $model->saveFile($image);
@@ -42,13 +35,14 @@ trait UploadedFiles
                     if ($model->hasPreviousFile()) {
                         $model->deletePreviousFile();
                     }
-                } else {
-                    $model->setAttribute($model->fileColumn(), $model->getRawOriginal($model->fileColumn()));
                 }
             }
         });
 
         static::deleting(function (Model $model) {
+            $model->setAttribute($model->fileColumn(), null);
+            $model->save();
+
             $model->deletePreviousFile();
         });
     }

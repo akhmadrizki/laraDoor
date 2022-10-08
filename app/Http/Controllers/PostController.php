@@ -113,11 +113,12 @@ class PostController extends Controller
         try {
             Gate::authorize('update', [$post, $request->input('secret')]);
 
-            $validated = $request->safe(['name', 'title', 'body', 'deleteImage', 'image']);
+            $post->fill($request->safe(['name', 'title', 'body', 'image']));
 
-            $post->fill($validated);
-
-            $post->deleteImage = $validated['deleteImage'] ?? false;
+            // $post->deleteImage = $validated['deleteImage'] ?? false;
+            if ($request->has('deleteImage')) {
+                $post->image = null;
+            }
 
             $post->save();
 
