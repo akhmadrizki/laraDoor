@@ -41,6 +41,9 @@ Route::group(['middleware' => ['auth', 'isAdmin']], function () {
     ], function () {
 
         Route::get('/', [DashboardController::class, 'index'])->name('index');
+        Route::delete('/post/selectDelete', [DashboardController::class, 'destroyMany'])->name('delete-selected');
         Route::delete('/post/{post}', [DashboardController::class, 'destroy'])->name('destroy');
+        Route::delete('/post/{post}/delete-image', [DashboardController::class, 'destroyImage'])->name('destroy-image');
+        Route::post('/post/{post}/restore', [DashboardController::class, 'restore'])->name('restore');
     });
 });

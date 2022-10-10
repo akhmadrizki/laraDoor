@@ -116,18 +116,26 @@
                             </thead>
 
                             <tbody>
-                                @foreach ($posts as $post)
+
+                                @forelse ($posts as $post)
+                                @if (is_null($post->deleted_at))
                                 <tr>
-                                    <td><input type="checkbox"></td>
-                                    <td>{{ $post->id }}</td>
+                                    <td><input class="clickBox" value="{{ $post->id }}" type="checkbox"></td>
+                                    <td class="postId">{{ $post->id }}</td>
                                     <td>{{ $post->title }}</td>
                                     <td class="pre-line">{!! $post->body !!}</td>
                                     <td>
                                         @if (!is_null($post->getImageAsset()))
                                         <img class="img-prev" src="{{ $post->getImageAsset() }}">
-                                        <a href="#" data-toggle="modal" data-target="#deleteModal-{{ $post->id }}"
+                                        {{-- <a href="#" data-toggle="modal" data-target="#deleteModal-{{ $post->id }}"
                                             class="btn btn-danger ml-10 btn-img" rel="tooltip" title="Delete Image"><i
-                                                class="fa fa-trash"></i></a>
+                                                class="fa fa-trash"></i></a> --}}
+
+                                        <button type="button" data-toggle="modal"
+                                            data-target="#deleteModalImage-{{ $post->id }}"
+                                            class="btn btn-danger ml-10 btn-img" rel="tooltip" title="Delete Image">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
                                         @else
                                         -
                                         @endif
@@ -144,25 +152,41 @@
                                         </button>
                                     </td>
                                 </tr>
-                                @endforeach
 
-                                {{-- <tr class="bg-gray-light">
+                                @else
+                                <tr class="bg-gray-light">
                                     <td>&nbsp;</td>
-                                    <td>331</td>
-                                    <td>Lorem Ipsum</td>
-                                    <td>Lorem ipsum dolor sit amet, consectar bla bla bla...</td>
+                                    <td>{{ $post->id }}</td>
+                                    <td>{{ $post->title }}</td>
+                                    <td>{!! $post->body !!}</td>
                                     <td>
                                         -
                                     </td>
-                                    <td>2014/7/9<br><span class="small">13:59:00</span></td>
-                                    <td><a href="#" class="btn btn-default" rel="tooltip" title="Recover"><i
-                                                class="fa fa-repeat"></i></a></td>
-                                </tr> --}}
+                                    <td>
+                                        {{$post->created_at->format('Y/m/d')}}<br>
+                                        <span class="small">{{$post->created_at->format('H:i')}}</span>
+                                    </td>
+                                    <td>
+                                        <button type="button" data-toggle="modal"
+                                            data-target="#restoreModal-{{ $post->id }}" class="btn btn-default"
+                                            rel="tooltip" title="Recover">
+                                            <i class="fa fa-repeat"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                @endif
+
+                                @empty
+                                Oppss post is empty
+                                @endforelse
+
                             </tbody>
                         </table>
 
-                        <a href="#" class="btn btn-default mt-5" data-toggle="modal" data-target="#deleteModal">Delete
-                            Checked Items</a>
+                        <button type="button" data-toggle="modal" data-target="#deleteModalData"
+                            class="btn btn-default mt-5 dissapire" id="btnCheckbox" rel="tooltip" title="Delete">
+                            Delete Checked Items
+                        </button>
 
                         <div class="text-center">
                             {{ $posts->onEachSide(5)->links() }}
@@ -205,11 +229,91 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="deleteModalImage-{{ $post->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <div class="text-center">
+                    <h4 class="modal-title" id="myModalLabel">Delete Image</h4>
+                </div>
+            </div>
+            <div class="modal-body pad-20">
+                <p>Are you sure want to delete this image?</p>
+            </div>
+            <div class="modal-footer">
+                <form action="{{ route('admin.destroy-image', $post->id) }}" method="POST">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+                    @method('DELETE')
+                    @csrf
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="restoreModal-{{ $post->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <div class="text-center">
+                    <h4 class="modal-title" id="myModalLabel">Restore Data</h4>
+                </div>
+            </div>
+            <div class="modal-body pad-20">
+                <p>Are you sure want to restore post <i>{{ $post->title }}</i>?</p>
+            </div>
+            <div class="modal-footer">
+                <form action="{{ route('admin.restore', $post->id) }}" method="POST">
+                    @csrf
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Restore</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endforeach
+
+<div class="modal fade" id="deleteModalData" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <div class="text-center">
+                    <h4 class="modal-title" id="myModalLabel">Delete Data</h4>
+                </div>
+            </div>
+            <div class="modal-body pad-20">
+                <p>Are you sure want to delete this item(s)?</p>
+            </div>
+            <div class="modal-footer">
+                <form id="btnDelSelected" action="{{ route('admin.delete-selected') }}" method="POST">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+                    @method('DELETE')
+                    @csrf
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('js')
-<script>
+{{-- <script>
     $("#selectAll").click(function() {
         $("input[type=checkbox]").prop("checked", $(this).prop("checked"));
     });
@@ -218,6 +322,36 @@
         if (!$(this).prop("checked")) {
             $("#selectAll").prop("checked", false);
         }
+
     });
-</script>
+
+    $('#btnDelSelected').submit(function (event) {
+        event.preventDefault();
+
+        let getId = $('.clickBox:checked').map( function() {
+         return this.value   
+        }).get();
+
+        $.ajax({
+            // ambil value dari form url value action
+            url: $(this).attr('action'),
+            type: 'DELETE',
+            data: {
+                ids: getId,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function (data) {
+                window.location.reload();
+                // console.log(data);
+            },
+            error: function (xhr, status, error) {
+                window.location.reload();
+                // console.log(error);
+            }
+        });
+
+        // console.log(getId);
+    });
+
+</script> --}}
 @endpush

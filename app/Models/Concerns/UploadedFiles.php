@@ -12,6 +12,7 @@ use Nette\Utils\FileSystem;
 
 trait UploadedFiles
 {
+    private static $cache = null;
     /**
      * The "booted" method of the model.
      *
@@ -44,6 +45,10 @@ trait UploadedFiles
             $model->save();
 
             $model->deletePreviousFile();
+        });
+
+        static::restoring(function (Model $model) {
+            static::$cache = $model->deleted_at;
         });
     }
 

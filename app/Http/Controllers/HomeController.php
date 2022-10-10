@@ -24,9 +24,14 @@ class HomeController extends Controller
      */
     public function index()
     {
-        if (Auth::check()) {
+        if (Auth::check() && Auth::user()->role == 'user') {
             return redirect()->to('/post');
         }
+
+        if (Auth::check() && Auth::user()->role == 'admin') {
+            return redirect()->to('/admin');
+        }
+
         return view('auth.login');
     }
 }
