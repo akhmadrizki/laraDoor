@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\Role;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
 
@@ -21,14 +23,14 @@ class IsAdmin
     {
         $user = $request->user();
 
-        if ($user->role != 'admin') {
-            flash("Sorry, you can't access that page 🤪")->error();
-
-            return $request->expectsJson()
-                ? abort(403, 'Your email address is not verified.')
-                : Redirect::guest(URL::route($redirectToRoute ?: 'post.index'));
+        if (Auth::check() && $user->role === Role::Admin) {
+            return $next($request);
         }
 
-        return $next($request);
+        flash("Sorry, you can't access that page 🤪")->error();
+
+        return $request->expectsJson()
+            ? abort(403, 'Your email address is not verified.')
+            : Redirect::guest(URL::route($redirectToRoute ?: 'post.index'));
     }
 }

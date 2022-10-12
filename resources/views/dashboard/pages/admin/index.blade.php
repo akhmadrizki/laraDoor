@@ -4,7 +4,7 @@
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1>
+        <h1 class="mb-5">
             Dashboard
             <small>Control panel</small>
         </h1>
@@ -118,18 +118,19 @@
                             <tbody>
 
                                 @forelse ($posts as $post)
-                                @if (is_null($post->deleted_at))
-                                <tr>
-                                    <td><input class="clickBox" value="{{ $post->id }}" type="checkbox"></td>
+                                <tr @if($post->trashed()) class="bg-gray-light" @endif>
+                                    <td>
+                                        @if (!$post->trashed())
+                                        <input class="clickBox" value="{{ $post->id }}" type="checkbox">
+                                        @endif
+                                        &nbsp;
+                                    </td>
                                     <td class="postId">{{ $post->id }}</td>
                                     <td>{{ $post->title }}</td>
-                                    <td class="pre-line">{!! $post->body !!}</td>
+                                    <td class="pre-line">{!! nl2br($post->body) !!}</td>
                                     <td>
                                         @if (!is_null($post->getImageAsset()))
                                         <img class="img-prev" src="{{ $post->getImageAsset() }}">
-                                        {{-- <a href="#" data-toggle="modal" data-target="#deleteModal-{{ $post->id }}"
-                                            class="btn btn-danger ml-10 btn-img" rel="tooltip" title="Delete Image"><i
-                                                class="fa fa-trash"></i></a> --}}
 
                                         <button type="button" data-toggle="modal"
                                             data-target="#deleteModalImage-{{ $post->id }}"
@@ -145,36 +146,22 @@
                                         <span class="small">{{$post->created_at->format('H:i')}}</span>
                                     </td>
                                     <td>
+                                        @if (!$post->trashed())
                                         <button type="button" data-toggle="modal"
                                             data-target="#deleteModal-{{ $post->id }}" class="btn btn-danger"
                                             rel="tooltip" title="Delete">
                                             <i class="fa fa-trash"></i>
                                         </button>
-                                    </td>
-                                </tr>
 
-                                @else
-                                <tr class="bg-gray-light">
-                                    <td>&nbsp;</td>
-                                    <td>{{ $post->id }}</td>
-                                    <td>{{ $post->title }}</td>
-                                    <td>{!! $post->body !!}</td>
-                                    <td>
-                                        -
-                                    </td>
-                                    <td>
-                                        {{$post->created_at->format('Y/m/d')}}<br>
-                                        <span class="small">{{$post->created_at->format('H:i')}}</span>
-                                    </td>
-                                    <td>
+                                        @else
                                         <button type="button" data-toggle="modal"
                                             data-target="#restoreModal-{{ $post->id }}" class="btn btn-default"
                                             rel="tooltip" title="Recover">
                                             <i class="fa fa-repeat"></i>
                                         </button>
+                                        @endif
                                     </td>
                                 </tr>
-                                @endif
 
                                 @empty
                                 Oppss post is empty
@@ -313,45 +300,4 @@
 @endsection
 
 @push('js')
-{{-- <script>
-    $("#selectAll").click(function() {
-        $("input[type=checkbox]").prop("checked", $(this).prop("checked"));
-    });
-        
-    $("input[type=checkbox]").click(function() {
-        if (!$(this).prop("checked")) {
-            $("#selectAll").prop("checked", false);
-        }
-
-    });
-
-    $('#btnDelSelected').submit(function (event) {
-        event.preventDefault();
-
-        let getId = $('.clickBox:checked').map( function() {
-         return this.value   
-        }).get();
-
-        $.ajax({
-            // ambil value dari form url value action
-            url: $(this).attr('action'),
-            type: 'DELETE',
-            data: {
-                ids: getId,
-                _token: '{{ csrf_token() }}'
-            },
-            success: function (data) {
-                window.location.reload();
-                // console.log(data);
-            },
-            error: function (xhr, status, error) {
-                window.location.reload();
-                // console.log(error);
-            }
-        });
-
-        // console.log(getId);
-    });
-
-</script> --}}
 @endpush

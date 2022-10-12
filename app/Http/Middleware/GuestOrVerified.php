@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
 
@@ -20,9 +21,9 @@ class GuestOrVerified
     public function handle($request, Closure $next, $redirectToRoute = null)
     {
         if (
-            $request->user() &&
-            ($request->user() instanceof MustVerifyEmail &&
-                !$request->user()->hasVerifiedEmail())
+            Auth::guard('web')->user() &&
+            (Auth::guard('web')->user() instanceof MustVerifyEmail &&
+                !Auth::guard('web')->user()->hasVerifiedEmail())
         ) {
             flash('Sorry, your account has not been activated 🤯')->error();
 

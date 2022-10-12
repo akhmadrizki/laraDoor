@@ -32,18 +32,3 @@ Route::middleware(['guestOrVerified'])->group(function () {
 Auth::routes(['verify' => true, 'reset' => false, 'confirm' => false]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-Route::group(['middleware' => ['auth', 'isAdmin']], function () {
-
-    Route::group([
-        'prefix' => 'admin',
-        'as'     => 'admin.',
-    ], function () {
-
-        Route::get('/', [DashboardController::class, 'index'])->name('index');
-        Route::delete('/post/selectDelete', [DashboardController::class, 'destroyMany'])->name('delete-selected');
-        Route::delete('/post/{post}', [DashboardController::class, 'destroy'])->name('destroy');
-        Route::delete('/post/{post}/delete-image', [DashboardController::class, 'destroyImage'])->name('destroy-image');
-        Route::post('/post/{post}/restore', [DashboardController::class, 'restore'])->name('restore');
-    });
-});

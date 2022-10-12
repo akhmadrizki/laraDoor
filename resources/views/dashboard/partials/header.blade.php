@@ -24,7 +24,7 @@
                     <li class="user-header">
                         <img src="{{ asset('dashboard/img/user-ico.jpg')}}" class="img-circle" alt="User Image">
                         <p>
-                            {{ Auth::user()->name }} as <i>{{ Auth::user()->role }}</i>
+                            {{ Auth::user()->name }} as <i></i>
                         </p>
                     </li>
                     <!-- Menu Footer-->

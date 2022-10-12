@@ -32,6 +32,7 @@
 
     @include('dashboard.utils.script')
     @vite('resources/js/app.js')
+    {{-- pisah --}}
     @stack('js')
 </body>
 
