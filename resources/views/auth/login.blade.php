@@ -2,6 +2,10 @@
 
 @section('title') Login @endsection
 
+@section('header')
+@include('layouts.header')
+@endsection
+
 @section('content')
 <div class="login-box-head">
     <h1 class="mb-5">Login</h1>

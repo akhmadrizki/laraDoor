@@ -15,7 +15,7 @@
 </head>
 
 <body id="login">
-    @include('layouts.header')
+    @yield('header')
 
     <div class="box login-box">
         @yield('content')

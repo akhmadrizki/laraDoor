@@ -30,11 +30,11 @@
                     <!-- Menu Footer-->
                     <li class="user-footer">
                         <div class="text-right">
-                            <a href="{{ route('logout') }}" class="btn btn-danger btn-flat"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit()">Sign
+                            <a href="#" class="btn btn-danger btn-flat"
+                                onclick="document.getElementById('logout-form').submit()">Sign
                                 out</a>
 
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            <form id="logout-form" action="{{ route('admin.logout') }}" method="POST">
                                 @csrf
                             </form>
                         </div>

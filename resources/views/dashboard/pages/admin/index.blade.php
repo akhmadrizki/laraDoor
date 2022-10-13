@@ -132,9 +132,9 @@
                                         @if (!is_null($post->getImageAsset()))
                                         <img class="img-prev" src="{{ $post->getImageAsset() }}">
 
-                                        <button type="button" data-toggle="modal"
-                                            data-target="#deleteModalImage-{{ $post->id }}"
-                                            class="btn btn-danger ml-10 btn-img" rel="tooltip" title="Delete Image">
+                                        <button type="button" data-toggle="modal" data-id="{{ $post->id }}"
+                                            data-target="#deleteImagePostModal" class="btn btn-danger ml-10 btn-img"
+                                            rel="tooltip" title="Delete Image">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                         @else
@@ -147,16 +147,16 @@
                                     </td>
                                     <td>
                                         @if (!$post->trashed())
-                                        <button type="button" data-toggle="modal"
-                                            data-target="#deleteModal-{{ $post->id }}" class="btn btn-danger"
-                                            rel="tooltip" title="Delete">
+                                        <button type="button" data-toggle="modal" data-target="#deletePostModal"
+                                            data-id="{{ $post->id }}" class="btn btn-danger" rel="tooltip"
+                                            title="Delete">
                                             <i class="fa fa-trash"></i>
                                         </button>
 
                                         @else
-                                        <button type="button" data-toggle="modal"
-                                            data-target="#restoreModal-{{ $post->id }}" class="btn btn-default"
-                                            rel="tooltip" title="Recover">
+                                        <button type="button" data-toggle="modal" data-target="#restorePostModal"
+                                            data-id="{{ $post->id }}" class="btn btn-default" rel="tooltip"
+                                            title="Recover">
                                             <i class="fa fa-repeat"></i>
                                         </button>
                                         @endif
@@ -170,7 +170,7 @@
                             </tbody>
                         </table>
 
-                        <button type="button" data-toggle="modal" data-target="#deleteModalData"
+                        <button type="button" data-toggle="modal" data-target="#deleteMultiplePost"
                             class="btn btn-default mt-5 dissapire" id="btnCheckbox" rel="tooltip" title="Delete">
                             Delete Checked Items
                         </button>
@@ -189,88 +189,13 @@
 @endsection
 
 @section('modal')
-@foreach ($posts as $post)
-<div class="modal fade" id="deleteModal-{{ $post->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
-                        class="sr-only">Close</span></button>
-                <div class="text-center">
-                    <h4 class="modal-title" id="myModalLabel">Delete Data</h4>
-                </div>
-            </div>
-            <div class="modal-body pad-20">
-                <p>Are you sure want to delete post <i>{{ $post->title }}</i>?</p>
-            </div>
-            <div class="modal-footer">
-                <form action="{{ route('admin.destroy', $post->id) }}" method="POST">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
-                    @method('DELETE')
-                    @csrf
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+@include('dashboard.utils.modal.delete-post')
+@include('dashboard.utils.modal.restore-post')
+@include('dashboard.utils.modal.delete-post-image')
+@include('dashboard.utils.modal.delete-multiple-post')
 
-<div class="modal fade" id="deleteModalImage-{{ $post->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
-                        class="sr-only">Close</span></button>
-                <div class="text-center">
-                    <h4 class="modal-title" id="myModalLabel">Delete Image</h4>
-                </div>
-            </div>
-            <div class="modal-body pad-20">
-                <p>Are you sure want to delete this image?</p>
-            </div>
-            <div class="modal-footer">
-                <form action="{{ route('admin.destroy-image', $post->id) }}" method="POST">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-
-                    @method('DELETE')
-                    @csrf
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="restoreModal-{{ $post->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
-                        class="sr-only">Close</span></button>
-                <div class="text-center">
-                    <h4 class="modal-title" id="myModalLabel">Restore Data</h4>
-                </div>
-            </div>
-            <div class="modal-body pad-20">
-                <p>Are you sure want to restore post <i>{{ $post->title }}</i>?</p>
-            </div>
-            <div class="modal-footer">
-                <form action="{{ route('admin.restore', $post->id) }}" method="POST">
-                    @csrf
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-danger">Restore</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-@endforeach
-
-<div class="modal fade" id="deleteModalData" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+{{-- <div class="modal fade" id="deleteModalData" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -295,9 +220,6 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 
 @endsection
-
-@push('js')
-@endpush

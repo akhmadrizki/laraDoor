@@ -53,11 +53,18 @@ class LoginController extends Controller
     {
         flash("Wellcome back" . ' ' . $user->name . ' ' . "🖐️")->success();
 
-        // if ($user->role === Role::Admin->value) {
-        //     return redirect()->route('admin.index');
-        // }
-
         return redirect()->intended($this->redirectTo);
+    }
+
+    /**
+     * Get the needed authorization credentials from the request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    protected function credentials(Request $request)
+    {
+        return array_merge($request->only($this->username(), 'password'), ['role' => Role::User]);
     }
 
     /**

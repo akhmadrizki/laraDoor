@@ -18,11 +18,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::group(['middleware' => ['guest:admin', 'PreventBackHistory']], function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('admin.login');
+    Route::post('/login', [LoginController::class, 'login']);
+});
 
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('admin.login')->middleware('guest:admin');
-Route::post('/login', [LoginController::class, 'login'])->middleware('guest:admin');
-
-Route::group(['middleware' => ['auth:admin']], function () {
+Route::group(['middleware' => ['auth:admin', 'PreventBackHistory']], function () {
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('admin.logout');
 

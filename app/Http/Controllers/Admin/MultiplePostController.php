@@ -14,7 +14,8 @@ class MultiplePostController extends Controller
         DB::beginTransaction();
 
         try {
-            $delete = Post::whereIn('id', $request->ids);
+            $convertArr = explode(',', $request->ids);
+            $delete = Post::whereIn('id', $convertArr);
 
             $delete->get()->each->delete();
 
@@ -28,5 +29,6 @@ class MultiplePostController extends Controller
         }
 
         flash("Data's successfully deleted")->success();
+        return redirect()->back();
     }
 }
