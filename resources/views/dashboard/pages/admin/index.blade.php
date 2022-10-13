@@ -21,85 +21,96 @@
                     <div class="box-header with-border">
                         <h1 class="font-18 m-0">Timedoor Challenge - Level 9</h1>
                     </div>
-                    <form method="" action="">
-                        <div class="box-body">
-                            <div class="bordered-box mb-20">
-                                <form class="form" role="form">
-                                    <table class="table table-no-border mb-0">
-                                        <tbody>
-                                            <tr>
-                                                <td width="80"><b>Title</b></td>
-                                                <td>
-                                                    <div class="form-group mb-0">
-                                                        <input type="text" class="form-control">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td><b>Body</b></td>
-                                                <td>
-                                                    <div class="form-group mb-0">
-                                                        <input type="text" class="form-control">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
 
-                                    <table class="table table-search">
-                                        <tbody>
-                                            <tr>
-                                                <td width="80"><b>Image</b></td>
-                                                <td width="60">
-                                                    <label class="radio-inline">
-                                                        <input type="radio" name="imageOption" id="inlineRadio1"
-                                                            value="option1"> with
-                                                    </label>
-                                                </td>
-                                                <td width="80">
-                                                    <label class="radio-inline">
-                                                        <input type="radio" name="imageOption" id="inlineRadio2"
-                                                            value="option2"> without
-                                                    </label>
-                                                </td>
-                                                <td>
-                                                    <label class="radio-inline">
-                                                        <input type="radio" name="imageOption" id="inlineRadio3"
-                                                            value="option3" checked> unspecified
-                                                    </label>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td width="80"><b>Status</b></td>
-                                                <td>
-                                                    <label class="radio-inline">
-                                                        <input type="radio" name="statusOption" id="inlineRadio1"
-                                                            value="option1"> on
-                                                    </label>
-                                                </td>
-                                                <td>
-                                                    <label class="radio-inline">
-                                                        <input type="radio" name="statusOption" id="inlineRadio2"
-                                                            value="option2"> delete
-                                                    </label>
-                                                </td>
-                                                <td>
-                                                    <label class="radio-inline">
-                                                        <input type="radio" name="statusOption" id="inlineRadio3"
-                                                            value="option3" checked> unspecified
-                                                    </label>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td><a href="#" class="btn btn-default mt-10"><i
-                                                            class="fa fa-search"></i> Search</a></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </form>
-                            </div>
+                    <div class="box-body">
+                        <div class="bordered-box mb-20">
+                            <form action="{{ route('admin.index') }}" method="GET" class="form" role="form">
+                                <table class="table table-no-border mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td width="80"><b>Title</b></td>
+                                            <td>
+                                                <div class="form-group mb-0">
+                                                    <input type="text" name="title" value="{{ request('title') }}"
+                                                        class="form-control">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Body</b></td>
+                                            <td>
+                                                <div class="form-group mb-0">
+                                                    <input type="text" name="body" value="{{ request('body') }}"
+                                                        class="form-control">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table class="table table-search">
+                                    <tbody>
+                                        <tr>
+                                            <td width="80"><b>Image</b></td>
+                                            <td width="60">
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="image" value="with" id="inlineRadio1" {{
+                                                        request()->query('image') == 'with' ? 'checked' : '' }}>
+                                                    with
+                                                </label>
+                                            </td>
+                                            <td width="80">
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="image" value="without" id="inlineRadio2"
+                                                        {{ request()->query('image') == 'without' ? 'checked' : '' }}>
+                                                    without
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="image" value="unspecified"
+                                                        id="inlineRadio3" {{ request()->query('image') == 'unspecified'
+                                                    || request()->query('image') == '' ? 'checked' : '' }}>
+                                                    unspecified
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="80"><b>Status</b></td>
+                                            <td>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="status" value="on" id="inlineRadio1" {{
+                                                        request()->query('status') == 'on' ? 'checked' : '' }}> on
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="status" value="delete" id="inlineRadio2"
+                                                        {{ request()->query('status') == 'delete' ? 'checked' : '' }}>
+                                                    delete
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="status" value="unspecified"
+                                                        id="inlineRadio3" {{ request()->query('status') == 'unspecified'
+                                                    || request()->query('status') == '' ? 'checked' : '' }}>
+                                                    unspecified
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <button type="submit" class="btn btn-default mt-10">
+                                                    <i class="fa fa-search"></i> Search
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </form>
                         </div>
-                    </form>
+                    </div>
 
                     <div class="box-body">
                         <table class="table table-bordered">
@@ -164,7 +175,10 @@
                                 </tr>
 
                                 @empty
-                                Oppss post is empty
+                                <tr>
+                                    <td colspan="7" class="text-center text-info"><b>Oppss post is empty</b></td>
+                                </tr>
+
                                 @endforelse
 
                             </tbody>
@@ -194,32 +208,5 @@
 @include('dashboard.utils.modal.restore-post')
 @include('dashboard.utils.modal.delete-post-image')
 @include('dashboard.utils.modal.delete-multiple-post')
-
-{{-- <div class="modal fade" id="deleteModalData" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
-                        class="sr-only">Close</span></button>
-                <div class="text-center">
-                    <h4 class="modal-title" id="myModalLabel">Delete Data</h4>
-                </div>
-            </div>
-            <div class="modal-body pad-20">
-                <p>Are you sure want to delete this item(s)?</p>
-            </div>
-            <div class="modal-footer">
-                <form id="btnDelSelected" action="{{ route('admin.delete-selected') }}" method="POST">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-
-                    @method('DELETE')
-                    @csrf
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div> --}}
 
 @endsection
