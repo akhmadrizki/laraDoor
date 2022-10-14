@@ -18,12 +18,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware' => ['guest:admin', 'PreventBackHistory']], function () {
+Route::group(['middleware' => ['guest:admin']], function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('admin.login');
     Route::post('/login', [LoginController::class, 'login']);
 });
 
-Route::group(['middleware' => ['auth:admin', 'PreventBackHistory']], function () {
+Route::group(['middleware' => ['auth:admin']], function () {
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('admin.logout');
 
@@ -33,13 +33,13 @@ Route::group(['middleware' => ['auth:admin', 'PreventBackHistory']], function ()
 
         Route::get('/', [DashboardController::class, 'index'])->name('index');
 
-        Route::delete('/post/selectDelete', [MultiplePostController::class, 'destroy'])->name('delete-selected');
+        Route::delete('/post/multiple', [MultiplePostController::class, 'destroy'])->name('post.multiple.destroy');
 
         Route::controller(PostController::class)->group(function () {
-            Route::delete('/post/{post}', 'destroy')->name('destroy');
-            Route::post('/post/{post}/restore', 'restore')->name('restore');
+            Route::delete('/post/{post}', 'destroy')->name('post.destroy');
+            Route::post('/post/{post}/restore', 'restore')->name('post.restore');
         });
 
-        Route::delete('/post/{post}/delete-image', [PostImageController::class, 'destroy'])->name('destroy-image');
+        Route::delete('/post/{post}/image', [PostImageController::class, 'destroy'])->name('post.image.destroy');
     });
 });

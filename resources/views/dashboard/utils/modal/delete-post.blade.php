@@ -12,7 +12,7 @@
                 <p>Are you sure want to delete post?</p>
             </div>
             <div class="modal-footer">
-                <form action="{{ route('admin.destroy', ['id']) }}" method="POST" id="form-action">
+                <form action="{{ route('admin.post.destroy', ['post' => 'id']) }}" method="POST" id="form-action">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
                     @method('DELETE')
@@ -27,9 +27,14 @@
 @push('js')
 <script>
     $('#deletePostModal').on('show.bs.modal', function (event) {
-        let getId = $(event.relatedTarget).data('id');
-        let url = $("#form-action").attr('action').replace('id', getId);
-        $("#form-action").attr('action', url);
+        let formUrl = $("#form-action").attr('action');
+        
+        let deleteUrl = formUrl.substring(0, formUrl.lastIndexOf('/') + 1);
+        
+        let url = $("#form-action").attr(
+            'action',
+            deleteUrl + $(event.relatedTarget).data('id'),
+        );
     })
 </script>
 @endpush

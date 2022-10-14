@@ -12,7 +12,7 @@
                 <p>Are you sure want to delete this image?</p>
             </div>
             <div class="modal-footer">
-                <form action="{{ route('admin.destroy-image', ['id']) }}" method="POST" id="form-image">
+                <form action="{{ route('admin.post.image.destroy', ['post' => 'id']) }}" method="POST" id="form-image">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
                     @method('DELETE')
@@ -27,9 +27,14 @@
 @push('js')
 <script>
     $('#deleteImagePostModal').on('show.bs.modal', function (event) {
-        let getId = $(event.relatedTarget).data('id');
-        let url = $("#form-image").attr('action').replace('id', getId);
-        $("#form-image").attr('action', url);
+        let formUrl = $("#form-image").attr('action');
+        
+        let deleteUrl = formUrl.substring(0, formUrl.lastIndexOf('/') + 1);
+        
+        let url = $("#form-image").attr(
+            'action',
+            deleteUrl + $(event.relatedTarget).data('id'),
+        );
     })
 </script>
 @endpush

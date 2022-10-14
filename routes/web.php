@@ -24,7 +24,7 @@ Route::get('/', function () {
 
 Route::redirect('/', '/post');
 
-Route::middleware(['guestOrVerified', 'PreventBackHistory'])->group(function () {
+Route::middleware(['guestOrVerified:web'])->group(function () {
     Route::resource('/post', PostController::class);
     Route::post('/post/{post}/verify/{method}', VerifyPostCOntroller::class)->name('post.verify-password');
 });

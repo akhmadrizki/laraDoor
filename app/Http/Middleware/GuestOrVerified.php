@@ -18,18 +18,18 @@ class GuestOrVerified
      * @param  string|null  $redirectToRoute
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse|null
      */
-    public function handle($request, Closure $next, $redirectToRoute = null)
+    public function handle($request, Closure $next, ?string $guard = null)
     {
         if (
-            Auth::guard('web')->user() &&
-            (Auth::guard('web')->user() instanceof MustVerifyEmail &&
-                !Auth::guard('web')->user()->hasVerifiedEmail())
+            Auth::guard($guard)->user() &&
+            (Auth::guard($guard)->user() instanceof MustVerifyEmail &&
+                !Auth::guard($guard)->user()->hasVerifiedEmail())
         ) {
             flash('Sorry, your account has not been activated 🤯')->error();
 
             return $request->expectsJson()
                 ? abort(403, 'Your email address is not verified.')
-                : Redirect::guest(URL::route($redirectToRoute ?: 'verification.notice'));
+                : Redirect::guest(URL::route('verification.notice'));
         }
 
         return $next($request);

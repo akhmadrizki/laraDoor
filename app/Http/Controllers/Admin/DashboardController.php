@@ -19,19 +19,19 @@ class DashboardController extends Controller
             ->where('title', 'LIKE', "%{$title}%")
             ->where('body', 'LIKE', "%{$body}%");
 
-        if ($image == "without") {
-            $posts = $posts->whereNull('image');
-        } elseif ($image == "with") {
-            $posts = $posts->whereNotNull('image');
-        }
+        $posts = match ($image) {
+            'without' => $posts->whereNull('image'),
+            'with' => $posts->whereNotNull('image'),
+            default => $posts,
+        };
 
-        if ($status == "on") {
-            $posts = $posts->withTrashed(false);
-        } elseif ($status == "delete") {
-            $posts = $posts->onlyTrashed();
-        }
+        $posts = match ($status) {
+            'on' => $posts->withoutTrashed(),
+            'delete' => $posts->onlyTrashed(),
+            default => $posts->withTrashed(),
+        };
 
-        $posts = $posts->withTrashed()->paginate(2);
+        $posts = $posts->paginate(2);
 
         return view('dashboard.pages.admin.index', compact('posts'));
     }

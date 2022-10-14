@@ -76,21 +76,15 @@ class LoginController extends Controller
     }
 
     /**
-     * Log the user out of the application.
+     * The user has logged out of the application.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     * @return mixed
      */
-    public function logout(Request $request)
+    protected function loggedOut(Request $request)
     {
-        $this->guard()->logout();
+        flash("Logout successfully")->success();
 
-        if ($response = $this->loggedOut($request)) {
-            return $response;
-        }
-
-        return $request->wantsJson()
-            ? new JsonResponse([], 204)
-            : redirect('/admin/login');
+        return redirect()->to('admin/login');
     }
 }

@@ -29,6 +29,7 @@ class MultiplePostController extends Controller
         }
 
         flash("Data's successfully deleted")->success();
+
         return redirect()->back();
     }
 }
