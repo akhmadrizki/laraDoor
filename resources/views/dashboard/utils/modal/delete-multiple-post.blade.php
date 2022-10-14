@@ -12,7 +12,7 @@
                 <p>Are you sure want to delete this item(s)?</p>
             </div>
             <div class="modal-footer">
-                <form id="btnDelSelected" action="{{ route('admin.post.multiple.destroy') }}" method="POST">
+                <form id="btnDelSelected" method="POST">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
                     <input type="hidden" id="addValue" name="ids" value="">

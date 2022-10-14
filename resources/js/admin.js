@@ -21,11 +21,13 @@ $("input[type=checkbox]").click(function () {
 });
 
 $("#deleteMultiplePost").on("show.bs.modal", function () {
-    let idNya = $(".clickBox:checked")
+    let getIdCheckbox = $(".clickBox:checked")
         .map(function () {
             return this.value;
         })
         .get();
 
-    $("#addValue").val(idNya);
+    $("#addValue").val(getIdCheckbox);
+
+    $("#btnDelSelected").attr("action", route("admin.post.multiple.destroy"));
 });
