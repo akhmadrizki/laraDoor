@@ -204,8 +204,6 @@
 
 @section('modal')
 
-@routes
-
 @include('dashboard.utils.modal.delete-post')
 @include('dashboard.utils.modal.restore-post')
 @include('dashboard.utils.modal.delete-post-image')

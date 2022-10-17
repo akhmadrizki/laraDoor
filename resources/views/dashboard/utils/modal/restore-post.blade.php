@@ -35,8 +35,7 @@
 
     $('#restorePostModal').on('hide.bs.modal', function(event) {
         $("#form-restore").attr(
-            'action',
-            route('admin.post.restore', 'id'),
+            'action', '',
         );
     });
 </script>

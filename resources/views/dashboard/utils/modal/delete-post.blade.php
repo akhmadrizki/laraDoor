@@ -37,8 +37,7 @@
 
     $('#deletePostModal').on('hide.bs.modal', function(event) {
         $("#form-action").attr(
-            'action',
-            route('admin.post.destroy', 'id'),
+            'action', '',
         );
     });
 </script>

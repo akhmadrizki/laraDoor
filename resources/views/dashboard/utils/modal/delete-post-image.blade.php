@@ -37,8 +37,7 @@
 
     $('#deleteImagePostModal').on('hide.bs.modal', function(event) {
         $("#form-image").attr(
-            'action',
-            route('admin.post.image.destroy', 'id'),
+            'action', '',
         );
     });
 </script>

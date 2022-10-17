@@ -9,6 +9,7 @@
     <title>Timedoor Admin | Dashboard</title>
 
     @include('dashboard.utils.style')
+    @routes('admin')
 </head>
 
 <body class="hold-transition skin sidebar-mini">

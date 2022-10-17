@@ -31,7 +31,7 @@ class DashboardController extends Controller
             default => $posts->withTrashed(),
         };
 
-        $posts = $posts->paginate(2);
+        $posts = $posts->paginate(2)->withQueryString();
 
         return view('dashboard.pages.admin.index', compact('posts'));
     }
