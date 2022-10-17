@@ -138,10 +138,10 @@
                                     </td>
                                     <td class="postId">{{ $post->id }}</td>
                                     <td>{{ $post->title }}</td>
-                                    <td class="pre-line">{!! nl2br($post->body) !!}</td>
+                                    <td class="pre-line">{{ ($post->body) }}</td>
                                     <td>
                                         @if (!is_null($post->getImageAsset()))
-                                        <img class="img-prev" src="{{ $post->getImageAsset() }}">
+                                        <img class="image-table" src="{{ $post->getImageAsset() }}">
 
                                         <button type="button" data-toggle="modal" data-id="{{ $post->id }}"
                                             data-target="#deleteImagePostModal" class="btn btn-danger ml-10 btn-img"

@@ -2,6 +2,14 @@
   display: none;
 }
 
+.image-table {
+  max-width: 68%;
+}
+
+.pre-line {
+  white-space: pre-line;
+}
+
 /*CUSTOM TOGGLE*/
 .btn-toggle {
   margin: 0 4rem;
