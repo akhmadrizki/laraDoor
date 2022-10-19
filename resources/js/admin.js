@@ -29,5 +29,5 @@ $("#deleteMultiplePost").on("show.bs.modal", function () {
 
     $("#addValue").val(getIdCheckbox);
 
-    $("#btnDelSelected").attr("action", "");
+    $("#btnDelSelected").attr("action", route("admin.post.multiple.destroy"));
 });
