@@ -4,11 +4,11 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\URL;
 
-class GuestOrVerified
+class GuestOrVerifiedApi
 {
     /**
      * Handle an incoming request.
@@ -21,17 +21,14 @@ class GuestOrVerified
     public function handle($request, Closure $next, ?string $guard = null)
     {
         if (Auth::guard($guard)->user() && (Auth::guard($guard)->user() instanceof MustVerifyEmail && !Auth::guard($guard)->user()->hasVerifiedEmail())) {
-            flash('Sorry, your account has not been activated 🤯')->error();
-
+            // Auth::setUser(Auth::guard($guard)->user());
+            // return 'gagal';
             return $request->expectsJson()
                 ? abort(403, 'Your email address is not verified.')
-                : Redirect::guest(URL::route('verification.notice'));
-        }
-
-        if (Auth::guard($guard)->check()) {
-            Auth::shouldUse($guard);
+                : $next($request);
         }
 
         return $next($request);
+        // return response()->json('error');
     }
 }
