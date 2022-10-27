@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
@@ -17,6 +19,31 @@ class LoginController extends Controller
             'email'    => $request->email,
             'password' => $request->password
         ];
+
+        $validator = Validator::make($request->all(), [
+            'email' => ['required'],
+            'password' => ['required'],
+        ]);
+
+        $err = [];
+
+        foreach ($validator->errors()->getMessages() as $key => $value) {
+            $err[] = [
+                'key'     => $key,
+                'message' => $value[0],
+            ];
+        }
+
+        if ($validator->fails()) {
+            throw new HttpResponseException(response()->json([
+                'error' => [
+                    'code'    => 422,
+                    'title'   => 'Validation Error',
+                    'message' => 'The given data was invalid.',
+                    'errors'  => $err
+                ]
+            ], 422));
+        }
 
         if (auth()->attempt($login)) {
             $account['token'] = Auth::user()->createToken('MyApp')->accessToken;
