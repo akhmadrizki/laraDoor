@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\Api\User;
 
+use App\Exceptions\UploadFileException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Post\PostStoreRequest;
+use App\Http\Requests\Api\Post\PostUpdateRequest;
+use App\Http\Resources\Api\User\Post\PostResource;
 use App\Models\Post;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
@@ -18,37 +22,55 @@ class PostController extends Controller
     {
         $posts = Post::latest()->paginate(10);
 
-        return response()->json($posts, 200);
+        return PostResource::collection($posts);
     }
 
-    public function store(Request $request)
-    {
-        # code...
-    }
-
-    public function update(Request $request, Post $post)
+    public function store(PostStoreRequest $request)
     {
         DB::beginTransaction();
 
         try {
-            Gate::authorize('update', [$post, $request->input('secret')]);
+            $post = new Post($request->safe(['name', 'title', 'body', 'password', 'image']));
 
-            $validator = Validator::make($request->all(), [
-                'name'  => ['required', 'string', 'min:3', 'max:255'],
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-                'password' => ['required', 'string', 'min:8'],
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'statusCode' => 422,
-                    'message'    => $validator->errors()
-                ], 422);
+            if (Auth::user()) {
+                $post->user_id = Auth::user()->id;
+                $post->name    = Auth::user()->name;
             }
+
+            $post->save();
+
+            DB::commit();
+        } catch (Exception $error) {
+            DB::rollBack();
+
+            $message = "Data failed to create 😭";
+
+            if ($error instanceof UploadFileException) {
+                $message = $error->getMessage();
+            }
+
+            return response()->json([
+                'message' => $message,
+            ]);
+        }
+
+        return response()->json([
+            'statusCode' => 200,
+            'message'    => "Post successfully created",
+        ], 200);
+    }
+
+    public function update(PostUpdateRequest $request, Post $post)
+    {
+        DB::beginTransaction();
+
+        try {
+            $secret = $post->secret($request->passVerify);
+
+            Gate::authorize('update', [$post, $secret]);
 
             $post->fill($request->safe(['name', 'title', 'body', 'image']));
 
-            // $post->deleteImage = $validated['deleteImage'] ?? false;
             if ($request->has('deleteImage')) {
                 $post->image = null;
             }
@@ -65,6 +87,13 @@ class PostController extends Controller
                 $message = $error->getMessage();
             }
 
+            if ($error instanceof ModelNotFoundException) {
+                return response()->json([
+                    'statusCode' => 404,
+                    'message' => 'Post not found',
+                ], 404);
+            }
+
             return response()->json([
                 'message' => $message,
             ]);
@@ -72,7 +101,7 @@ class PostController extends Controller
 
         return response()->json([
             'statusCode' => 200,
-            'message'      => "Post successfully updated",
+            'message'    => "Post successfully updated",
         ], 200);
     }
 
@@ -112,9 +141,6 @@ class PostController extends Controller
             ]);
         }
 
-        return response()->json([
-            'statusCode' => 200,
-            'message'      => "Post successfully deleted",
-        ], 200);
+        return response()->json([], 204);
     }
 }

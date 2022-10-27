@@ -1,0 +1,342 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: API-Laradoor
+  contact:
+    name: Akhmad Rizki
+    email: akhmadrizki24@gmail.com
+    url: "http://laradoor.test/api"
+  license:
+    name: Apache 2.0
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+  x-logo:
+    url: "https://storage.googleapis.com/go-merchant-production.appspot.com/uploads/2020/09/1261654f715ab45ae7e55cc18228d585_8a826c5c89150a7b0843879ee8a26396_compressed.jpg"
+  description: This API documentation
+externalDocs:
+  description: Find out how to create a GitHub repo for your OpenAPI definition.
+  url: "https://github.com/Rebilly/generator-openapi-repo"
+tags:
+  - name: Post
+    description: Example echo operations.
+  - name: Auth
+    description: Operations about authentication
+servers:
+  - url: "http://dev.example.com/api/v1"
+    description: Dev Server
+  - url: "https://example.com/api/v1"
+
+paths:
+  /post:
+    get:
+      tags:
+        - Post
+      security: []
+      operationId: post.index
+      summary: List Posts
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Post"
+
+  /login:
+    post:
+      tags:
+        - Auth
+      security: []
+      operationId: login
+      summary: Login Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  description: Email of user
+                  example: akhmadrizki24@gmail.com
+                password:
+                  type: string
+                  description: user password
+                  example: user123
+      responses:
+        200:
+          description: Login Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    description: response data
+                    properties:
+                      token:
+                        type: string
+                        description: Token users
+                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiYjIxYTcxNjJmZmJhNGY3YThkNWNkNWY4NjA3NTZkMmE3OGViZWQ2OTVkZmY3Y2QxNGQyMTlmYTk5NDRjNmNjYzRlNTRkZTgxOTc5ZmNlODMiLCJpYXQiOjE2NjY4MzczMzAuNTYxNzU4LCJuYmYiOjE2NjY4MzczMzAuNTYxNzYyLCJleHAiOjE2OTgzNzMzMzAuNDEyNjQ4LCJzdWIiOiIxMiIsInNjb3BlcyI6W119.i7wB_3P9S2xiLIxXf0RSFSBJZy3HSv1-k7UPmB_D2lkiNNMg68SHh5K2PG8CAykfDTJlGYHWtTItpd4aSVRXUalIZkM2wfJxh2CDSfx_k0g_eRcTvrbonJt2jNeNf4tvWh2QzvaRfrLQDO4-nlBW-TCzswzXy9ZuGQqNCIKjFPAfJrfRyDIY0oJB1pSDFSgeOYkli0V_KaXiC76Je1-PBilIFWR6a4fjJx66fqLwVjPHaNwItnolopFsyANZSZ_YhqbEYrobDQ0K7Jbf3WNMXmw2aBRENwN00tNZexMYCVocwdoLDfnAIvfdVAv48HA4lSnUvumXd4pRUZ2x02F-nAWgYoVnmv1oorpxwM7ihOy97YK77AeQVF-SwsKpIN0_6uMR_w1JQbysU1KPc71bqfMsYWihmFhIXrWo5s5x7YEBLszWYuLfhM0szadDVuNeOZ6pYezlNmPFJVEfoBx8WysGkol9KtDPa04VuuokW7xljnwNDiXINRFFdQV6E4dFHM45a7Py5hAH0YOZt1FHQ0xvgIXF8UEEk7nvoiE04VvltRU_Bjl6jTKmocX1qsiToQhb3ZLY7ZWySH05HUlY6OIvnwhWISdmEFRJ0rGT8zT4HMYIxamPauv2HdllKdGMX6TMDV_ngOb_3RN4sIs8V68Cj8y9pFcXYgd4Iqa6UCI"
+                      id:
+                        type: integer
+                        description: Users ID
+                        example: 12
+                      name:
+                        type: string
+                        description: Users name
+                        example: akhmad rizki
+                      email:
+                        type: string
+                        description: Users email
+                        example: "rizki@gmail.com"
+                      role:
+                        type: string
+                        description: Users role
+                        example: "user"
+        422:
+          description: Validation Error Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  properties:
+                    error:
+                      type: object
+              examples:
+                error:
+                  value:
+                    error:
+                      code: 422
+                      title: Validation Error
+                      message: The given data was invalid.
+                      errors:
+                        - key: "email"
+                          message: User email is required
+
+components:
+  securitySchemes:
+    main_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: "http://example.com/api/oauth/dialog"
+          scopes:
+            "read:users": read users info
+            "write:users": modify or remove users
+    api_key:
+      type: apiKey
+      in: header
+      name: api_key
+    basic_auth:
+      type: http
+      scheme: basic
+  schemas:
+    Post:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Post ID
+          example: 1
+        name:
+          oneOf:
+            - type: "null"
+            - type: string
+          description: User name
+          example: Yoga
+        title:
+          type: string
+          description: Post title
+          example: example title
+        body:
+          type: string
+          description: Body post
+          example: example body
+        image:
+          type: string
+          description: Image post
+          format: url
+          example: "http://example.com/image/example.jpg"
+        created_at:
+          type: string
+          description: post created datetime
+          format: datetime
+          example: "2022-02-02Z13:12:23.00000Z"
+        user_id:
+          type: number
+          description: User ID
+          example: 1
+    Email:
+      description: User email address
+      type: string
+      format: test
+      example: john.smith@example.com
+    User:
+      type: object
+      properties:
+        username:
+          description: User supplied username
+          type: string
+          minLength: 4
+          example: John78
+        firstName:
+          description: User first name
+          type: string
+          minLength: 1
+          example: John
+        lastName:
+          description: User last name
+          type: string
+          minLength: 1
+          example: Smith
+        email:
+          $ref: "#/components/schemas/Email"
+    Schema:
+      type: object
+      title: Scalars
+      properties:
+        stringProperty:
+          description: Property name's description (type is string)1111
+          type: string
+          example: example
+        readOnlyStringProperty:
+          description: Notice this only appears in the response.
+          type: string
+          readOnly: true
+          example: example
+        writeOnlyStringProperty:
+          description: Notice this only appears in the request.
+          type: string
+          writeOnly: true
+          example: example
+        minLengthString:
+          description: Property name's description (type is string)
+          type: string
+          minLength: 4
+          example: example
+        maxLengthString:
+          description: Property name's description (type is string)
+          type: string
+          maxLength: 140
+          example: example
+        minAndMaxLengthString:
+          description: Property name's description (type is string)
+          type: string
+          minLength: 4
+          maxLength: 140
+          example: example
+        stringEnumValues:
+          description: Property name's description (type is string)
+          type: string
+          enum:
+            - sample
+            - example
+            - specimen
+            - case
+            - instance
+            - illustration
+        stringDateTime:
+          description: "Property name's description (type is string, format is date-time)"
+          type: string
+          format: date-time
+        stringDate:
+          description: "Property name's description (type is string, format is date-time)"
+          type: string
+          format: date
+        stringEmail:
+          description: "Property name's description (type is string, format is email)"
+          type: string
+          format: email
+        stringIpAddressV4:
+          description: "Property name's description (type is string, format is ipv4 address)"
+          type: string
+          format: ipv4
+        stringIpAddressV6:
+          description: "Property name's description (type is string, format is ipv6 address)"
+          type: string
+          format: ipv6
+        stringPassword:
+          description: "Property name's description (type is string, format is password)"
+          type: string
+          format: password
+        stringHostname:
+          description: "Property name's description (type is string, format is hostname)"
+          type: string
+          format: hostname
+        stringUri:
+          description: "Property name's description (type is string, format is uri)"
+          type: string
+          format: uri
+        stringUuid:
+          description: "Property name's description (type is string, format is uuid)"
+          type: string
+          format: uuid
+        numberProperty:
+          description: Property name's description (type is number)
+          type: number
+          example: 8
+        numberFloat:
+          description: "Property name's description (type is number, format is float)"
+          type: number
+          format: float
+        numberDouble:
+          description: "Property name's description (type is number, format is double)"
+          type: number
+          format: double
+        numberGreaterThanOrEquals:
+          description: Property name's description (type is number)
+          type: number
+          minimum: 5
+        numberGreaterThan:
+          description: Property name's description (type is number)
+          type: number
+        numberLessThan:
+          description: Property name's description (type is number)
+          type: number
+        numberLessThanOrEquals:
+          description: Property name's description (type is number)
+          type: number
+          maximum: 8
+        numberRange:
+          description: Property name's description (type is number)
+          type: number
+          minimum: 5
+          maximum: 8
+        numberRangeExclusiveMaximum:
+          description: Property name's description (type is number)
+          type: number
+        numberRangeExclusiveMinimumAndMaximum:
+          description: Property name's description (type is number)
+          type: number
+        numberMultipleOf:
+          description: Property name's description (type is number)
+          type: number
+          multipleOf: 2
+        integerType:
+          description: Property name's description (type is integer)
+          type: integer
+        integer32bit:
+          description: "Property name's description (type is integer, format is int32)"
+          type: integer
+          format: int32
+        integer64bit:
+          description: "Property name's description (type is integer, format is int64)"
+          type: integer
+          format: int64
+        booleanProperty:
+          description: Property name's description (type is boolean)
+          type: boolean
+  headers:
+    ExpiresAfter:
+      description: date in UTC when token expires
+      schema:
+        type: string
+        format: date-time

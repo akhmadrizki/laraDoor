@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\VerificationController;
 use App\Http\Controllers\Api\User\PostController;
@@ -18,12 +19,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
-Route::get('email/verify/{user}', [VerificationController::class, 'verify'])->name('verification.verify');
+Route::delete('/logout', [LogoutController::class, 'logout'])->middleware('auth:api');
+
+Route::get('email/verify/{user}', [VerificationController::class, 'verify']);
 
 Route::middleware('guestOrVerified:api')->group(function () {
     Route::get('/post', [PostController::class, 'index']);

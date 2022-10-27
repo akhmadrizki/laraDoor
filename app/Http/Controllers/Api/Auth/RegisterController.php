@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -22,11 +23,24 @@ class RegisterController extends Controller
             'password' => ['required', 'string', 'min:8'],
         ]);
 
+        $err = [];
+
+        foreach ($validator->errors()->getMessages() as $key => $value) {
+            $err[] = [
+                'key'     => $key,
+                'message' => $value[0],
+            ];
+        }
+
         if ($validator->fails()) {
-            return response()->json([
-                'statusCode' => 422,
-                'message'    => $validator->errors()
-            ], 422);
+            throw new HttpResponseException(response()->json([
+                'error' => [
+                    'code'    => 422,
+                    'title'   => 'Validation Error',
+                    'message' => 'The given data was invalid.',
+                    'errors'  => $err
+                ]
+            ], 422));
         }
 
         $input = $request->all();
