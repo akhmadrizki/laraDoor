@@ -128,20 +128,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-              examples:
-                error:
-                  value:
-                    error:
-                      code: 422
-                      title: Validation Error
-                      message: The given data was invalid.
-                      errors:
-                        - key: "title"
-                          message: Title is required
+                $ref: "#/components/schemas/Error422"
   /post/{id}:
     get:
       parameters:
@@ -233,20 +220,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-              examples:
-                error:
-                  value:
-                    error:
-                      code: 422
-                      title: Validation Error
-                      message: The given data was invalid.
-                      errors:
-                        - key: "title"
-                          message: Title is required
+                $ref: "#/components/schemas/Error422"
         401:
           description: Unauthorized
           content:
@@ -287,20 +261,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-              examples:
-                error:
-                  value:
-                    error:
-                      code: 422
-                      title: Validation Error
-                      message: The given data was invalid.
-                      errors:
-                        - key: "title"
-                          message: Title is required
+                $ref: "#/components/schemas/Error422"
         401:
           description: Unauthorized
           content:
@@ -415,20 +376,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-              examples:
-                error:
-                  value:
-                    error:
-                      code: 422
-                      title: Validation Error
-                      message: The given data was invalid.
-                      errors:
-                        - key: "email"
-                          message: User email is required
+                $ref: "#/components/schemas/Error422"
   /register:
     post:
       tags:
@@ -511,20 +459,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-              examples:
-                error:
-                  value:
-                    error:
-                      code: 422
-                      title: Validation Error
-                      message: The given data was invalid.
-                      errors:
-                        - key: "email"
-                          message: User email is required
+                $ref: "#/components/schemas/Error422"
 
   /logout:
     delete:
@@ -612,6 +547,30 @@ components:
               example: "Not Found"
             errors:
               type: array
+
+    Error422:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: number
+              description: Error code
+              example: 422
+            title:
+              type: string
+              description: Title of the error
+              example: Validation Error
+            message:
+              type: string
+              description: Message of the error
+              example: The given data was invalid.
+            errors:
+              type: array
+              example:
+                - key: "email"
+                  message: User email is required
     Email:
       description: User email address
       type: string
