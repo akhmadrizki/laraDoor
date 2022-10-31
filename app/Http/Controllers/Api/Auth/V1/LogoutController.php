@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Auth;
+namespace App\Http\Controllers\Api\Auth\V1;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -13,8 +13,8 @@ class LogoutController extends Controller
         $token->delete();
 
         return response()->json([
-            'statusCode' => 200,
-            'message'    => 'You have been succesfully logged out'
+            'code'    => 200,
+            'message' => 'You have been succesfully logged out'
         ], 200);
     }
 }

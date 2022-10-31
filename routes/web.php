@@ -32,7 +32,3 @@ Route::middleware(['guestOrVerified:web'])->group(function () {
 Auth::routes(['verify' => true, 'reset' => false, 'confirm' => false]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-Route::get('/v1', function () {
-    return view('api-doc');
-});

@@ -2,10 +2,7 @@
 
 namespace App\Http\Requests\Api\Post;
 
-use App\Http\Resources\Api\User\Post\ValidationResource;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Validation\ValidationException;
 
 class PostUpdateRequest extends FormRequest
 {
@@ -34,30 +31,6 @@ class PostUpdateRequest extends FormRequest
             'password' => ['nullable', 'numeric', 'digits:4'],
             'deleteImage' => ['nullable'],
         ];
-    }
-
-    /**
-     * Handle a failed validation attempt.
-     *
-     * @param  \Illuminate\Contracts\Validation\Validator  $validator
-     * @return void
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    protected function failedValidation(Validator $validator)
-    {
-        // throw new HttpResponseException(response()->json([
-        //     'error' => [
-        //         'code'    => 422,
-        //         'title'   => 'Validation Error',
-        //         'message' => 'The given data was invalid.',
-        //         'errors'  => $err
-        //     ]
-        // ], 422));
-
-        $response = new ValidationResource($validator->errors()->getMessages());
-
-        throw (new ValidationException($validator, $response));
     }
 
     /**

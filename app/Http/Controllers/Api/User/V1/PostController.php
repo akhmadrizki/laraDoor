@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\Api\User;
+namespace App\Http\Controllers\Api\User\V1;
 
-use App\Exceptions\UploadFileException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Post\PostStoreRequest;
 use App\Http\Requests\Api\Post\PostUpdateRequest;
 use App\Http\Resources\Api\User\Post\PostResource;
 use App\Models\Post;
-use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
+use App\Exceptions\UploadFileException;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class PostController extends Controller
@@ -23,6 +23,11 @@ class PostController extends Controller
         $posts = Post::latest()->paginate(10);
 
         return PostResource::collection($posts);
+    }
+
+    public function show(Post $post)
+    {
+        return new PostResource($post);
     }
 
     public function store(PostStoreRequest $request)
@@ -40,7 +45,7 @@ class PostController extends Controller
             $post->save();
 
             DB::commit();
-        } catch (Exception $error) {
+        } catch (\Exception $error) {
             DB::rollBack();
 
             $message = "Data failed to create 😭";
@@ -54,10 +59,7 @@ class PostController extends Controller
             ]);
         }
 
-        return response()->json([
-            'statusCode' => 200,
-            'message'    => "Post successfully created",
-        ], 200);
+        return new PostResource($post);
     }
 
     public function update(PostUpdateRequest $request, Post $post)
@@ -78,7 +80,7 @@ class PostController extends Controller
             $post->save();
 
             DB::commit();
-        } catch (Exception $error) {
+        } catch (\Exception $error) {
             DB::rollBack();
 
             $message = 'Update failed';
@@ -96,13 +98,10 @@ class PostController extends Controller
 
             return response()->json([
                 'message' => $message,
-            ]);
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
-        return response()->json([
-            'statusCode' => 200,
-            'message'    => "Post successfully updated",
-        ], 200);
+        return new PostResource($post);
     }
 
     public function destroy(Request $request, $post)
@@ -120,7 +119,7 @@ class PostController extends Controller
             $post->delete();
 
             DB::commit();
-        } catch (Exception $error) {
+        } catch (\Exception $error) {
             DB::rollBack();
 
             $message = 'Delete failed';

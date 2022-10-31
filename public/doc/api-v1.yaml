@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.0
 info:
   version: 1.0.0
   title: API-Laradoor
@@ -45,12 +45,358 @@ paths:
                     minItems: 0
                     items:
                       $ref: "#/components/schemas/Post"
+        403:
+          description: Forbidden Access
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+              examples:
+                error:
+                  value:
+                    error:
+                      code: 403
+                      title: Access Forbidden
+                      message: Email address is not verified.
+                      errors: []
+        404:
+          description: Url Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+              examples:
+                error:
+                  value:
+                    error:
+                      code: 404
+                      title: Url Not Found
+                      message: Not Found
+                      errors: []
+    post:
+      tags:
+        - Post
+      security: []
+      operationId: post.store
+      summary: Create Posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - title
+                - body
+              properties:
+                name:
+                  type: string
+                  nullable: true
+                  description: Name of authors
+                  example: "Masashi Kishimoto"
+                title:
+                  type: string
+                  description: Title of the post
+                  example: "Naruto Shippuden"
+                  minLength: 10
+                  maxLength: 32
+                body:
+                  type: string
+                  description: user password
+                  example: "Ini adalah manga paling banyak disukai"
+                  minLength: 10
+                  maxLength: 200
+                image:
+                  type: string
+                  format: binary
+                  description: Image of the post
+                  example: "http://example.com/image/example.jpg"
+                password:
+                  type: number
+                  nullable: true
+                  description: Password of the post
+                  example: 1234
+                  maxLength: 4
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Post"
+        422:
+          description: Validation Error Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+              examples:
+                error:
+                  value:
+                    error:
+                      code: 422
+                      title: Validation Error
+                      message: The given data was invalid.
+                      errors:
+                        - key: "title"
+                          message: Title is required
+  /post/{id}:
+    get:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      tags:
+        - Post
+      security: []
+      operationId: post.detail
+      summary: Detail Posts
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Post"
+        404:
+          description: Url Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+              examples:
+                error:
+                  value:
+                    error:
+                      code: 404
+                      title: Url Not Found
+                      message: Not Found
+                      errors: []
+
+    put:
+      tags:
+        - Post
+      security: []
+      operationId: post.update
+      summary: Update Posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - title
+                - body
+              properties:
+                name:
+                  type: string
+                  nullable: true
+                  description: Name of authors
+                  example: "Masashi Kishimoto"
+                title:
+                  type: string
+                  description: Title of the post
+                  example: "Naruto Shippuden"
+                  minLength: 10
+                  maxLength: 32
+                body:
+                  type: string
+                  description: user password
+                  example: "Ini adalah manga paling banyak disukai"
+                  minLength: 10
+                  maxLength: 200
+                image:
+                  type: string
+                  description: Image of the post
+                  example: "http://example.com/image/example.jpg"
+                password:
+                  type: number
+                  nullable: true
+                  description: Password of the post
+                  example: 1234
+                  maxLength: 4
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Post"
+        422:
+          description: Validation Error Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+              examples:
+                error:
+                  value:
+                    error:
+                      code: 422
+                      title: Validation Error
+                      message: The given data was invalid.
+                      errors:
+                        - key: "title"
+                          message: Title is required
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: object
+                    description: response data
+                    properties:
+                      code:
+                        type: integer
+                        description: Http status code
+                        example: 401
+                      title:
+                        type: string
+                        description: Title of the error
+                        example: "Authentication Failed"
+                      message:
+                        type: string
+                        description: Error message
+                        example: "Unauthorized"
+        404:
+          description: Url Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: object
+                    description: response data
+                    properties:
+                      code:
+                        type: integer
+                        description: Http status code
+                        example: 404
+                      title:
+                        type: string
+                        description: Title of the error
+                        example: "Url Not Found"
+                      message:
+                        type: string
+                        description: Error message
+                        example: "Not Found"
+                      errors:
+                        type: array
+                        example: []
+    delete:
+      tags:
+        - Post
+      security: []
+      operationId: post.delete
+      summary: Delete Posts
+      responses:
+        422:
+          description: Validation Error Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+              examples:
+                error:
+                  value:
+                    error:
+                      code: 422
+                      title: Validation Error
+                      message: The given data was invalid.
+                      errors:
+                        - key: "title"
+                          message: Title is required
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: object
+                    description: response data
+                    properties:
+                      code:
+                        type: integer
+                        description: Http status code
+                        example: 401
+                      title:
+                        type: string
+                        description: Title of the error
+                        example: "Authentication Failed"
+                      message:
+                        type: string
+                        description: Error message
+                        example: "Unauthorized"
+        404:
+          description: Url Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: object
+                    description: response data
+                    properties:
+                      code:
+                        type: integer
+                        description: Http status code
+                        example: 404
+                      title:
+                        type: string
+                        description: Title of the error
+                        example: "Url Not Found"
+                      message:
+                        type: string
+                        description: Error message
+                        example: "Not Found"
+                      errors:
+                        type: array
+                        example: []
 
   /login:
     post:
       tags:
         - Auth
-      security: []
+      parameters:
+        - $ref: "#/components/parameters/BearerToken"
+      security:
+        - BearerToken: []
       operationId: login
       summary: Login Users
       requestBody:
@@ -68,7 +414,7 @@ paths:
                 password:
                   type: string
                   description: user password
-                  example: user123
+                  example: "user123"
       responses:
         200:
           description: Login Success
@@ -91,7 +437,7 @@ paths:
                       name:
                         type: string
                         description: Users name
-                        example: akhmad rizki
+                        example: "akhmad rizki"
                       email:
                         type: string
                         description: Users email
@@ -100,6 +446,29 @@ paths:
                         type: string
                         description: Users role
                         example: "user"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: object
+                    description: response data
+                    properties:
+                      code:
+                        type: integer
+                        description: Http status code
+                        example: 401
+                      title:
+                        type: string
+                        description: Title of the error
+                        example: "Authentication Failed"
+                      message:
+                        type: string
+                        description: Error message
+                        example: "Unauthorized"
+
         422:
           description: Validation Error Response
           content:
@@ -107,9 +476,104 @@ paths:
               schema:
                 type: object
                 properties:
-                  properties:
+                  error:
+                    type: object
+              examples:
+                error:
+                  value:
                     error:
-                      type: object
+                      code: 422
+                      title: Validation Error
+                      message: The given data was invalid.
+                      errors:
+                        - key: "email"
+                          message: User email is required
+  /register:
+    post:
+      tags:
+        - Auth
+      security: []
+      operationId: Register
+      summary: Register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  description: Email of user
+                  example: akhmadrizki24@gmail.com
+                password:
+                  type: string
+                  description: user password
+                  example: "user123"
+      responses:
+        200:
+          description: Login Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    description: response data
+                    properties:
+                      token:
+                        type: string
+                        description: Token users
+                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiYjIxYTcxNjJmZmJhNGY3YThkNWNkNWY4NjA3NTZkMmE3OGViZWQ2OTVkZmY3Y2QxNGQyMTlmYTk5NDRjNmNjYzRlNTRkZTgxOTc5ZmNlODMiLCJpYXQiOjE2NjY4MzczMzAuNTYxNzU4LCJuYmYiOjE2NjY4MzczMzAuNTYxNzYyLCJleHAiOjE2OTgzNzMzMzAuNDEyNjQ4LCJzdWIiOiIxMiIsInNjb3BlcyI6W119.i7wB_3P9S2xiLIxXf0RSFSBJZy3HSv1-k7UPmB_D2lkiNNMg68SHh5K2PG8CAykfDTJlGYHWtTItpd4aSVRXUalIZkM2wfJxh2CDSfx_k0g_eRcTvrbonJt2jNeNf4tvWh2QzvaRfrLQDO4-nlBW-TCzswzXy9ZuGQqNCIKjFPAfJrfRyDIY0oJB1pSDFSgeOYkli0V_KaXiC76Je1-PBilIFWR6a4fjJx66fqLwVjPHaNwItnolopFsyANZSZ_YhqbEYrobDQ0K7Jbf3WNMXmw2aBRENwN00tNZexMYCVocwdoLDfnAIvfdVAv48HA4lSnUvumXd4pRUZ2x02F-nAWgYoVnmv1oorpxwM7ihOy97YK77AeQVF-SwsKpIN0_6uMR_w1JQbysU1KPc71bqfMsYWihmFhIXrWo5s5x7YEBLszWYuLfhM0szadDVuNeOZ6pYezlNmPFJVEfoBx8WysGkol9KtDPa04VuuokW7xljnwNDiXINRFFdQV6E4dFHM45a7Py5hAH0YOZt1FHQ0xvgIXF8UEEk7nvoiE04VvltRU_Bjl6jTKmocX1qsiToQhb3ZLY7ZWySH05HUlY6OIvnwhWISdmEFRJ0rGT8zT4HMYIxamPauv2HdllKdGMX6TMDV_ngOb_3RN4sIs8V68Cj8y9pFcXYgd4Iqa6UCI"
+                      id:
+                        type: integer
+                        description: Users ID
+                        example: 12
+                      name:
+                        type: string
+                        description: Users name
+                        example: "akhmad rizki"
+                      email:
+                        type: string
+                        description: Users email
+                        example: "rizki@gmail.com"
+                      role:
+                        type: string
+                        description: Users role
+                        example: "user"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: object
+                    description: response data
+                    properties:
+                      code:
+                        type: integer
+                        description: Http status code
+                        example: 401
+                      title:
+                        type: string
+                        description: Title of the error
+                        example: "Authentication Failed"
+                      message:
+                        type: string
+                        description: Error message
+                        example: "Unauthorized"
+
+        422:
+          description: Validation Error Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
               examples:
                 error:
                   value:
@@ -121,23 +585,35 @@ paths:
                         - key: "email"
                           message: User email is required
 
+  /logout:
+    delete:
+      tags:
+        - Auth
+      parameters:
+        - $ref: "#/components/parameters/BearerToken"
+      security:
+        - BearerToken: []
+      operationId: logout
+      summary: Logout
+      responses:
+        204:
+          description: Logout success
+
 components:
   securitySchemes:
-    main_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: "http://example.com/api/oauth/dialog"
-          scopes:
-            "read:users": read users info
-            "write:users": modify or remove users
-    api_key:
-      type: apiKey
-      in: header
-      name: api_key
-    basic_auth:
+    BearerToken:
       type: http
-      scheme: basic
+      scheme: bearer
+  parameters:
+    BearerToken:
+      name: Authorization
+      in: header
+      required: true
+      description: Bearer token
+      schema:
+        type: string
+      example: |
+        eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiYTQyZDMwMTU1N2U1YTI1ZGRjZDI2ZTgyOGIzNzJhYWZkOTU1ZjM1YjljODFhOGE2MWI2ODlmM2EyZWIwMTEzNmUxM2JmM2UyM2I0NjExNWMiLCJpYXQiOjE2NjY5MjcyNTYuMzgwNTg1LCJuYmYiOjE2NjY5MjcyNTYuMzgwNTg4LCJleHAiOjE2OTg0NjMyNTYuMzczMzQ0LCJzdWIiOiIxMSIsInNjb3BlcyI6W119.SgG05aD0RfcOu4S69iQ14RmkgpxgtLL-h5q2fp8s0CEKK13eRk9HBA5gC0f4jvDPRxrQaRHVZkpfO2kvv8sUNbKaZr6cca0QGLji7i_EKRbi--Is05D6Aq4aeEk5s9r07K1i2jmWX-dTVacDXiGF4rn39HybGqPEy2jFcpcPk9T3Ws2gF7s3H-gu5TFpWUYfTcBESPAoM_3GYWkPCf3S0RpZaWXBqAsVxSrtrDOGDCYdQBXXNH_LfQXN2i448d91Wh7CyqnJl3YblnegeWtyMImke0KgGWuD2K-MSm9q5cg7kAHYxu0Y41080dYBX9x82WrvbFuAgzJQs33kNh6Tqlhta22lzy5vEns9ntflTVqiUE67L1CROvH_VEJtrgQr48WJUcYhxjAEyromDVXObOBhd8bLWUdZpM4XUVB33SrnOMoZdGH3He5QVopGv66QoOeKaqUeRUvGv3tZFreqzyS9tc2wREyT_8Pf3EqYlhVFhxb2pfG4SbtXLKc1pVn2fi0jZyzh0iufQl1L24QVNP0dB7-H3mjBDxZkWFToO0SspqA5vwHhjuGFzWM8NcvTaPcwjXE0pZQL7pxKRvievWP2uP906Eo7PBlvI1wIADwkBlwH5ctr4dYm96JM8FpSuwK6Be_lxfO3lNlUguCQt7zUF1R6yvyPkOOaO2Ha5a4
   schemas:
     Post:
       type: object
