@@ -4,6 +4,8 @@ namespace App\Exceptions;
 
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -50,6 +52,11 @@ class Handler extends ExceptionHandler
         });
     }
 
+    protected function needCustomResponse($request): bool
+    {
+        return $request->routeIs('api.*');
+    }
+
     /**
      * Convert a validation exception into a JSON response.
      *
@@ -59,6 +66,10 @@ class Handler extends ExceptionHandler
      */
     protected function invalidJson($request, ValidationException $exception)
     {
+        if (!$this->needCustomResponse($request)) {
+            return parent::invalidJson($request, $exception);
+        }
+
         $err = [];
 
         foreach ($exception->errors() as $key => $value) {
@@ -79,6 +90,29 @@ class Handler extends ExceptionHandler
     }
 
     /**
+     * Prepare a JSON response for the given exception.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Throwable  $e
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function prepareJsonResponse($request, Throwable $e)
+    {
+        if (!$this->needCustomResponse($request)) {
+            return parent::prepareJsonResponse($request, $e);
+        }
+
+        return response()->json([
+            'error' => [
+                'code'    => $this->isHttpException($e) ? $e->getStatusCode() : Response::HTTP_INTERNAL_SERVER_ERROR,
+                'title'   => 'Server Error',
+                'message' => $e->getMessage(),
+                'errors'  => [],
+            ]
+        ], status: $this->isHttpException($e) ? $e->getStatusCode() : Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
      * Convert an authentication exception into a JSON response.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -87,23 +121,18 @@ class Handler extends ExceptionHandler
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        $err = [];
-
-        foreach ($exception as $key => $value) {
-            $err[] = [
-                'key' => $key,
-                'message' => $value[0]
-            ];
+        if (!$this->needCustomResponse($request)) {
+            return parent::unauthenticated($request, $exception);
         }
 
         return response()->json([
             'error' => [
-                'code'    => 401,
+                'code'    => Response::HTTP_UNAUTHORIZED,
                 'title'   => 'Authentication Failed',
                 'message' => 'Unauthenticated',
-                'errors'  => $err,
+                'errors'  => [],
             ]
-        ], 401);
+        ], status: Response::HTTP_UNAUTHORIZED);
     }
 
     /**

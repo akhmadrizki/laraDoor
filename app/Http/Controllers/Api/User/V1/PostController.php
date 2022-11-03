@@ -86,7 +86,7 @@ class PostController extends Controller
             $message = 'Update failed';
 
             if ($error instanceof AuthorizationException) {
-                $message = $error->getMessage();
+                throw $error;
             }
 
             if ($error instanceof ModelNotFoundException) {

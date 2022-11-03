@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Auth\V1\LogoutController;
 use App\Http\Controllers\Api\Auth\V1\RegisterController;
 use App\Http\Controllers\Api\Auth\VerificationController;
 use App\Http\Controllers\Api\User\V1\PostController;
+use App\Http\Controllers\Api\User\V1\PostImageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,11 +30,13 @@ Route::delete('/logout', [LogoutController::class, 'logout'])->middleware('auth:
 
 Route::get('email/verify/{user}', [VerificationController::class, 'verify']);
 
-Route::get('/post', [PostController::class, 'index']);
+Route::get('/post', [PostController::class, 'index'])->name('post');
 Route::get('/post/{post}', [PostController::class, 'show']);
 
 Route::middleware('guestOrVerified:api')->group(function () {
     Route::post('/post', [PostController::class, 'store']);
-    Route::post('/post/{post}', [PostController::class, 'update']);
+    Route::put('/post/{post}', [PostController::class, 'update']);
     Route::delete('/post/{post}', [PostController::class, 'destroy']);
+
+    Route::post('/post/{post}/image', [PostImageController::class, 'store']);
 });
