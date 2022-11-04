@@ -190,6 +190,13 @@ paths:
                 $ref: "#/components/schemas/Error404"
 
     put:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            example: 1
       tags:
         - Post
       security: []
@@ -274,12 +281,33 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error404"
     delete:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            example: 1
       tags:
         - Post
       security: []
       operationId: post.delete
       summary: Delete Posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                password:
+                  type: number
+                  nullable: true
+                  description: Password of the post
+                  example: 1234
+                  minLength: 4
+                  maxLength: 4
       responses:
+        204:
+          description: Delete success
         401:
           description: Unauthorized
           content:
@@ -325,7 +353,7 @@ paths:
       summary: Post Image
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               properties:
                 image:

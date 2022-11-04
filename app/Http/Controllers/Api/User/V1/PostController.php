@@ -15,6 +15,7 @@ use App\Exceptions\UploadFileException;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PostController extends Controller
 {
@@ -27,7 +28,7 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
-        return new PostResource($post);
+        return PostResource::make($post);
     }
 
     public function store(PostStoreRequest $request)
@@ -54,23 +55,28 @@ class PostController extends Controller
                 $message = $error->getMessage();
             }
 
-            return response()->json([
-                'message' => $message,
-            ]);
+            abort(500, $message);
         }
 
-        return new PostResource($post);
+        return PostResource::make($post);
     }
 
-    public function update(PostUpdateRequest $request, Post $post)
+    /**
+     * Undocumented function
+     *
+     * @param PostUpdateRequest $request
+     * @param Post $post
+     * @return PostResource
+     */
+    public function update(PostUpdateRequest $request, Post $post): PostResource
     {
         DB::beginTransaction();
 
+        $secret = $post->secret($request->passVerify);
+
+        Gate::authorize('update', [$post, $secret]);
+
         try {
-            $secret = $post->secret($request->passVerify);
-
-            Gate::authorize('update', [$post, $secret]);
-
             $post->fill($request->safe(['name', 'title', 'body', 'image']));
 
             if ($request->has('deleteImage')) {
@@ -83,25 +89,14 @@ class PostController extends Controller
         } catch (\Exception $error) {
             DB::rollBack();
 
-            $message = 'Update failed';
+            $message = 'Error oucured while update';
 
-            if ($error instanceof AuthorizationException) {
-                throw $error;
-            }
-
-            if ($error instanceof ModelNotFoundException) {
-                return response()->json([
-                    'statusCode' => 404,
-                    'message' => 'Post not found',
-                ], 404);
-            }
-
-            return response()->json([
-                'message' => $message,
-            ], Response::HTTP_UNAUTHORIZED);
+            abort(500, $message);
         }
 
-        return new PostResource($post);
+        return PostResource::make($post);
+
+        // return new PostResource($post);
     }
 
     public function destroy(Request $request, $post)
@@ -124,20 +119,7 @@ class PostController extends Controller
 
             $message = 'Delete failed';
 
-            if ($error instanceof AuthorizationException) {
-                $message = $error->getMessage();
-            }
-
-            if ($error instanceof ModelNotFoundException) {
-                return response()->json([
-                    'statusCode' => 404,
-                    'message' => 'Post not found',
-                ], 404);
-            }
-
-            return response()->json([
-                'message' => $message,
-            ]);
+            abort(500, $message);
         }
 
         return response()->json([], 204);

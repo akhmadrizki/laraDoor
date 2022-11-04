@@ -24,7 +24,7 @@ class PostImageRequest extends FormRequest
     public function rules()
     {
         return [
-            'image'    => ['mimes:jpg,png,jpeg,gif', 'max:1000'],
+            'image'    => ['nullable', 'mimes:jpg,png,jpeg,gif', 'max:1000'],
             'password' => ['nullable', 'numeric', 'digits:4'],
             'deleteImage' => ['nullable'],
         ];

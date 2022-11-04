@@ -38,22 +38,9 @@ class PostImageController extends Controller
 
             $message = 'Update failed';
 
-            if ($error instanceof AuthorizationException) {
-                throw $error;
-            }
-
-            if ($error instanceof ModelNotFoundException) {
-                return response()->json([
-                    'statusCode' => 404,
-                    'message' => 'Post not found',
-                ], 404);
-            }
-
-            return response()->json([
-                'message' => $message,
-            ], Response::HTTP_UNAUTHORIZED);
+            abort(500, $message);
         }
 
-        return new PostResource($post);
+        return response()->json(status: 204);
     }
 }
